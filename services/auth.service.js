@@ -2,7 +2,7 @@ const db = require("../models");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 require("dotenv").config();
-
+const { findOneUser } = require("../dao/customer.dao");
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 
@@ -110,12 +110,7 @@ exports.registerServiceStaff = ({
 exports.loginService = ({ phone, password }) =>
   new Promise(async (resolve, reject) => {
     try {
-      const response = await db.Customer.findOne({
-        where: {
-          phone,
-        },
-        raw: true,
-      });
+      const response = await findOneUser(phone);
       const isCorrect =
         response && bcrypt.compareSync(password, response.password);
       const token =
