@@ -1,7 +1,8 @@
 const bcrypt = require("bcrypt");
 const authController = require("../services/auth.service");
 const db = require("../models");
-
+const { findOneUser } = require("../dao/customer.dao");
+const { findOneStaff } = require("../dao/staff.dao");
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 
@@ -16,12 +17,7 @@ exports.loginCustomer = async (req, res) => {
         msg: "Missing inputs !",
       });
 
-    const customer = await db.Customer.findOne({
-      where: {
-        phone,
-      },
-    });
-    console.log("hihi");
+    const customer = await findOneUser(phone);
 
     const response = await authController.loginService(req.body);
     const token = response.token;
@@ -59,11 +55,7 @@ exports.loginStaff = async (req, res) => {
         msg: "Missing inputs !",
       });
 
-    const customer = await db.Staff.findOne({
-      where: {
-        phone,
-      },
-    });
+    const customer = await findOneStaff(phone);
 
     const response = await authController.loginServiceStaff(req.body);
     const token = response.token;
