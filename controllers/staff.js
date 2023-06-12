@@ -1,10 +1,17 @@
 const {} = require("../controllers/product");
-const { createProduct } = require("../dao/product.dao");
+const { AllOrderDao } = require("../dao/order.dao");
+const {
+  createProductdao,
+  editProductdao,
+  deleteProductdao,
+  getProductdao,
+} = require("../dao/product.dao");
+const { SS } = require("../utils/util.service");
 
 exports.createProduct = async (req, res) => {
   try {
     const { name, price, image, descript } = req.body;
-    const product = await createProduct(name, price, image, descript);
+    const product = await createProductdao(name, price, image, descript);
     if (product) {
       return res.status(200).json({
         success: true,
@@ -29,7 +36,7 @@ exports.editProduct = async (req, res) => {
   try {
     const id = req.params;
     const { name, price, image, descript } = req.body;
-    const product = await this.editProduct(id, name, price, image, descript);
+    const product = await editProductdao(id, name, price, image, descript);
     if (product) {
       return res.status(200).json({
         success: true,
@@ -41,6 +48,44 @@ exports.editProduct = async (req, res) => {
         msg: "Loi khong tao thanh cong!",
       });
     }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: -1,
+      msg: "Fail at auth controller: " + error,
+    });
+  }
+};
+
+exports.deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    let product = await getProductdao(id);
+    if (!product) {
+      return ReE(res, 400, "Khong ton tai");
+    } else {
+      const data = await deleteProductdao(id);
+      return res.status(200).json({
+        success: true,
+      });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: -1,
+      msg: "Fail at auth controller: " + error,
+    });
+  }
+};
+
+// nhaan don
+
+exports.AllOrder = async (req, res) => {
+  try {
+    // const { order_id, status } = req.params;
+
+    const order = await AllOrderDao();
+    return SS(res, order, 200);
   } catch (error) {
     return res.status(500).json({
       success: false,

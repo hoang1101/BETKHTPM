@@ -1,7 +1,7 @@
 const db = require("../models");
 const cloudinary = require("cloudinary");
 
-async function getAllProduct() {
+async function getAllProductdao() {
   try {
     const response = await db.Product.findAll({});
 
@@ -11,7 +11,20 @@ async function getAllProduct() {
   }
 }
 
-async function createProduct(name, price, image, descript) {
+async function getProductdao(id) {
+  try {
+    const product = await db.Product.findOne({
+      where: {
+        id,
+      },
+    });
+    return product;
+  } catch (error) {
+    throw new Error(`${error}, traceback getProductdao()`);
+  }
+}
+
+async function createProductdao(name, price, image, descript) {
   try {
     const data = await cloudinary.v2.uploader.upload(
       image,
@@ -35,7 +48,7 @@ async function createProduct(name, price, image, descript) {
   }
 }
 
-async function editProduct(id, name, price, image, descript) {
+async function editProductdao(id, name, price, image, descript) {
   try {
     if (image) {
       const data = await cloudinary.v2.uploader.upload(
@@ -73,8 +86,21 @@ async function editProduct(id, name, price, image, descript) {
   }
 }
 
+async function deleteProductdao(id) {
+  try {
+    let product = await db.Product.destroy({
+      where: { id },
+    });
+    return true;
+  } catch (error) {
+    throw new Error(`${error}, traceback deleteProduct()`);
+  }
+}
+
 module.exports = {
-  getAllProduct,
-  createProduct,
-  editProduct,
+  getAllProductdao,
+  createProductdao,
+  editProductdao,
+  deleteProductdao,
+  getProductdao,
 };

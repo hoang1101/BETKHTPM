@@ -2,14 +2,11 @@
 // const orderRouter = require('./order');
 // const statisticRoutter = require('./statistic');
 const authRouter = require("./auth");
-<<<<<<< Updated upstream
 const customerRouter = require("./customer");
 // const adminRouter = require('./admin');
 // // const managerRouter = require("./manager");
-=======
 const productRouter = require("./product");
 const staffRouter = require("./staff");
->>>>>>> Stashed changes
 // const userRouter = require('./user');
 
 const initRouter = (app) => {
