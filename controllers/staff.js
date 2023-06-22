@@ -1,5 +1,9 @@
 const {} = require("../controllers/product");
-const { AllOrderDao } = require("../dao/order.dao");
+const {
+  AllOrderDao,
+  AcceptOrderDao,
+  CancleOrderDao,
+} = require("../dao/order.dao");
 const {
   createProductdao,
   editProductdao,
@@ -78,7 +82,7 @@ exports.deleteProduct = async (req, res) => {
   }
 };
 
-// nhaan don
+// danh sach don hang chua xu li
 
 exports.AllOrder = async (req, res) => {
   try {
@@ -94,3 +98,36 @@ exports.AllOrder = async (req, res) => {
     });
   }
 };
+exports.AcceptOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { staff_id } = req.body;
+
+    const order = await AcceptOrderDao(id, staff_id);
+    return SS(res, order, 200);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: -1,
+      msg: "Fail at auth controller: " + error,
+    });
+  }
+};
+exports.CancleOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { staff_id } = req.body;
+
+    const order = await CancleOrderDao(id, staff_id);
+    return SS(res, order, 200);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: -1,
+      msg: "Fail at auth controller: " + error,
+    });
+  }
+};
+
+// danh sach don hang
