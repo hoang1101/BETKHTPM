@@ -3,7 +3,7 @@ async function ImportIngredientDao(staff_id, ingredient_id, price, quantity) {
   try {
     const ingre = await db.Ingredient_Order.create({
       staff_id: staff_id,
-      //   ingredient_id: ingredient_id,
+      ingredient_id: ingredient_id,
       price: price,
       quantity: quantity,
     });

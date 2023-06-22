@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
       as: "staff",
     });
     Model.belongsTo(models.Ingredient, {
-      foreignKey: "id",
+      foreignKey: "ingredient_id",
       as: "ingredient",
     });
   };

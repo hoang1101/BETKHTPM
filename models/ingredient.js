@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
 
   Model.associate = (models) => {
     Model.hasMany(models.Ingredient_Order, {
-      foreignKey: "id",
+      foreignKey: "ingredient_id",
       as: "ingredient_order",
     });
     Model.belongsTo(models.Measure, {
