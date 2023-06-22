@@ -24,24 +24,32 @@ async function getProductdao(id) {
   }
 }
 
-async function createProductdao(name, price, image, descript) {
+async function createProductdao(name, price, image, descript, recipre) {
   try {
-    const data = await cloudinary.v2.uploader.upload(
-      image,
-      {
-        folder: "product",
-        width: 320,
-        height: 320,
-        crop: "scale",
-      },
-      function (error, result) {}
-    );
+    // const data = await cloudinary.v2.uploader.upload(
+    //   image,
+    //   {
+    //     folder: "product",
+    //     width: 320,
+    //     height: 320,
+    //     crop: "scale",
+    //   },
+    //   function (error, result) {}
+    // );
     const product = await db.Product.create({
       name,
-      image: data.secure_url,
+      image: "haha",
       price,
       descript,
     });
+    // console.log(recipre);
+    for (let i of recipre) {
+      const data = await db.Recipe.create({
+        product_id: product.id,
+        ingredient_id: i.ingredient_id,
+        quantity: i.quantity,
+      });
+    }
     return product;
   } catch (error) {
     throw new Error(`${error}, traceback createProduct()`);
@@ -79,6 +87,13 @@ async function editProductdao(id, name, price, image, descript) {
           where: id,
         }
       );
+      for (let i of recipre) {
+        const data = await db.Recipe.create({
+          product_id: product.id,
+          ingredient_id: i.ingredient_id,
+          quantity: i.quantity,
+        });
+      }
       return product;
     }
   } catch (error) {

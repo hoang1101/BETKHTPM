@@ -8,7 +8,7 @@ exports.ImportIngredient = async (req, res) => {
   try {
     const { staff_id, ingredient_id, price, quantity } = req.body;
     const data = ImportIngredientDao(staff_id, ingredient_id, price, quantity);
-    // const data1 = UpdateImportIngredientDao(ingredient_id, quantity);
+    const data1 = UpdateImportIngredientDao(ingredient_id, quantity);
     if (data) {
       return res.status(200).json({
         success: true,

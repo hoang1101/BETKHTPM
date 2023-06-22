@@ -5,6 +5,7 @@ const checkOut = async (req, res) => {
   address = req.body.address;
   action = await orderDao.createOrderDao(data, address);
   res.status(200).json({
+    success: true,
     msg: "hihi",
   });
 };

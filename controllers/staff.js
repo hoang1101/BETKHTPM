@@ -10,12 +10,21 @@ const {
   deleteProductdao,
   getProductdao,
 } = require("../dao/product.dao");
+const { createRecipe } = require("../dao/recipre.dao");
 const { SS } = require("../utils/util.service");
 
 exports.createProduct = async (req, res) => {
   try {
     const { name, price, image, descript } = req.body;
-    const product = await createProductdao(name, price, image, descript);
+    const recipre = req.body.recipre;
+    const product = await createProductdao(
+      name,
+      price,
+      image,
+      descript,
+      recipre
+    );
+    // const recipe = await createRecipe(recipre);
     if (product) {
       return res.status(200).json({
         success: true,

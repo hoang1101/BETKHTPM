@@ -17,6 +17,9 @@ module.exports = (sequelize, DataTypes) => {
       quantity: {
         type: DataTypes.INTEGER,
       },
+      date: {
+        type: DataTypes.DATE,
+      },
     },
     {
       timestamps: true,
