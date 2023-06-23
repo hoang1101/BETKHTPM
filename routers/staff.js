@@ -1,4 +1,10 @@
-const { ImportIngredient } = require("../controllers/ingredient");
+const { ImportIngredient } = require("../controllers/ingredient.controller");
+const {
+  getAllShipper,
+  createShipper,
+  deleteShipper,
+  editShipper,
+} = require("../controllers/shipper.controller");
 const {
   createProduct,
   deleteProduct,
@@ -6,12 +12,14 @@ const {
   AcceptOrder,
   CancleOrder,
   editProduct,
-} = require("../controllers/staff");
+} = require("../controllers/staff.controller");
 const {
   getAllIngredient,
   statisticalProduct,
   statisticalRevenueProduct,
-} = require("../controllers/statistical");
+  statisticalShipper,
+  statisticalShipperRevenue,
+} = require("../controllers/statistical.controller");
 
 const router = require("express").Router();
 
@@ -31,5 +39,14 @@ router.get("/all-ingre", getAllIngredient);
 //thong ke
 router.get("/statistical", statisticalProduct);
 router.get("/statistical-revenue", statisticalRevenueProduct);
+router.get("/statistical-shipper", statisticalShipper);
+router.get("/statistical-shipper-revenue", statisticalShipperRevenue);
+
+// shipper
+
+router.get("/shipper", getAllShipper);
+router.post("/create-shipper", createShipper);
+router.delete("/delete-shipper/:id", deleteShipper);
+router.put("/edit-shipper/:id", editShipper);
 
 module.exports = router;

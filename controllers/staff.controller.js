@@ -1,4 +1,4 @@
-const {} = require("../controllers/product");
+const {} = require("./product.controller");
 const {
   AllOrderDao,
   AcceptOrderDao,
@@ -111,9 +111,9 @@ exports.AcceptOrder = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { staff_id, shipper } = req.body;
+    const { staff_id, shipper_name } = req.body;
 
-    const order = await AcceptOrderDao(id, staff_id, shipper);
+    const order = await AcceptOrderDao(id, staff_id, shipper_name);
     return ReS(res, order, 200);
   } catch (error) {
     return res.status(500).json({

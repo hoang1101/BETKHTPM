@@ -18,7 +18,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
       },
       shipper: {
-        type: DataTypes.STRING,
+        type: DataTypes.INTEGER,
       },
       status: {
         type: DataTypes.BOOLEAN,
@@ -42,6 +42,10 @@ module.exports = (sequelize, DataTypes) => {
     Model.belongsTo(models.Staff, {
       foreignKey: "staff_id",
       as: "staff",
+    });
+    Model.belongsTo(models.Shipper, {
+      foreignKey: "shipper",
+      as: "shipper_",
     });
   };
   return Model;

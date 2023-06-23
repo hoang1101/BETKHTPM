@@ -46,7 +46,7 @@ async function AllOrderDao() {
   }
 }
 
-async function AcceptOrderDao(id, staff_id, shipper) {
+async function AcceptOrderDao(id, staff_id, shipper_name) {
   try {
     const data = await db.Order_Item.findAll({ where: { order_id: id } });
 
@@ -61,19 +61,22 @@ async function AcceptOrderDao(id, staff_id, shipper) {
           const quantity_old = findid.quantity;
           const data9 = await db.Ingredient.update(
             {
-              quantity: quantity_old - i.quantity,
+              quantity: quantity_old - i.quantity * j.quantity,
             },
             { where: { id: i.ingredient_id } }
           );
         }
       }
     }
+    const shipper = await db.Shipper.findOne({
+      shipper_name: shipper_name,
+    });
 
     const order = await db.Order.update(
       {
         staff_id: staff_id,
         status: 1,
-        shipper: shipper,
+        shipper: shipper.id,
       },
       {
         where: {

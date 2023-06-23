@@ -2,7 +2,7 @@ const {
   getAllProduct,
   getRecipreById,
   updateRecipe,
-} = require("../controllers/product");
+} = require("../controllers/product.controller");
 
 const router = require("express").Router();
 
