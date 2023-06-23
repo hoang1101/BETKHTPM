@@ -26,19 +26,19 @@ async function getProductdao(id) {
 
 async function createProductdao(name, price, image, descript, recipre) {
   try {
-    // const data = await cloudinary.v2.uploader.upload(
-    //   image,
-    //   {
-    //     folder: "product",
-    //     width: 320,
-    //     height: 320,
-    //     crop: "scale",
-    //   },
-    //   function (error, result) {}
-    // );
+    const data = await cloudinary.v2.uploader.upload(
+      image,
+      {
+        folder: "product",
+        width: 320,
+        height: 320,
+        crop: "scale",
+      },
+      function (error, result) {}
+    );
     const product = await db.Product.create({
       name,
-      image: "haha",
+      image: data.url,
       price,
       descript,
     });

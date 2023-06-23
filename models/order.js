@@ -17,6 +17,9 @@ module.exports = (sequelize, DataTypes) => {
       address: {
         type: DataTypes.STRING,
       },
+      shipper: {
+        type: DataTypes.STRING,
+      },
       status: {
         type: DataTypes.BOOLEAN,
       },

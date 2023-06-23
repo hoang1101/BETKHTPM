@@ -46,7 +46,7 @@ async function AllOrderDao() {
   }
 }
 
-async function AcceptOrderDao(id, staff_id) {
+async function AcceptOrderDao(id, staff_id, shipper) {
   try {
     const data = await db.Order_Item.findAll({ where: { order_id: id } });
 
@@ -73,6 +73,7 @@ async function AcceptOrderDao(id, staff_id) {
       {
         staff_id: staff_id,
         status: 1,
+        shipper: shipper,
       },
       {
         where: {

@@ -11,7 +11,7 @@ const {
   getProductdao,
 } = require("../dao/product.dao");
 const { createRecipe } = require("../dao/recipre.dao");
-const { SS } = require("../utils/util.service");
+const { SS, TT, ReS } = require("../utils/util.service");
 
 exports.createProduct = async (req, res) => {
   try {
@@ -111,10 +111,10 @@ exports.AcceptOrder = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { staff_id } = req.body;
+    const { staff_id, shipper } = req.body;
 
-    const order = await AcceptOrderDao(id, staff_id);
-    return SS(res, order, 200);
+    const order = await AcceptOrderDao(id, staff_id, shipper);
+    return ReS(res, order, 200);
   } catch (error) {
     return res.status(500).json({
       success: false,
