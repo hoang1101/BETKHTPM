@@ -1,5 +1,5 @@
-const db = require("../models");
-const moment = require("moment");
+const db = require('../models');
+const moment = require('moment');
 
 async function createOrderDao(data, address) {
   try {
@@ -22,7 +22,7 @@ async function createOrderDao(data, address) {
               new Date().getMonth(),
               new Date().getDate()
             )
-          ).format("YYYY-MM-DD")
+          ).format('YYYY-MM-DD')
         ),
       });
     }
@@ -34,10 +34,10 @@ async function createOrderDao(data, address) {
 async function AllOrderDao() {
   try {
     const order = await db.Order.findAll({
-      where: {
-        status: null,
-      },
-      attributes: { exclude: ["createdAt", "updatedAt"] },
+      // where: {
+      //   status: null,
+      // },
+      attributes: { exclude: ['createdAt', 'updatedAt'] },
     });
 
     return order;
@@ -109,10 +109,22 @@ async function CancleOrderDao(id, staff_id) {
     throw new Error(`${error}, traceback AcceptOrder()`);
   }
 }
+async function getOrderById(id) {
+  try {
+    const order = await db.Order_Item.findAll({
+      where: { order_id: id },
+      include: [{ model: db.Product, as: 'product' }],
+    });
 
+    return order;
+  } catch (error) {
+    throw new Error(`${error}, traceback AcceptOrder()`);
+  }
+}
 module.exports = {
   createOrderDao,
   AllOrderDao,
   AcceptOrderDao,
   CancleOrderDao,
+  getOrderById,
 };

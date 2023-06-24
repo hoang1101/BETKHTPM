@@ -50,7 +50,7 @@ module.exports.ReE = function (res, error) {
   return res.status(500).json({
     success: false,
     error: -1,
-    msg: "Fail at auth controller: " + error,
+    msg: 'Fail at auth controller: ' + error,
   });
 };
 //trả về Success Web Response
@@ -70,22 +70,22 @@ module.exports.TE = function (err_message, log) {
 
 module.exports.SS = function (res, data, satus = 200) {
   let send_data = { success: true };
-  if (typeof data == "object") {
+  if (typeof data == 'object') {
     send_data = Object.assign(data, send_data); //merge the objects
   }
-  if (typeof code !== "undefined") res.satus = satus;
-  return res.json({ data: send_data });
+  if (typeof code !== 'undefined') res.satus = satus;
+  return res.json({ success: true, data: send_data });
 };
 
 module.exports.TT = function (res, data, statuscode = 200) {
   // Success Web Response
   let send_data = { success: true };
 
-  if (typeof data == "object") {
+  if (typeof data == 'object') {
     send_data = Object.assign(data, send_data); //merge the objects
   }
 
-  if (typeof code !== "undefined") res.statusCode = statuscode;
+  if (typeof code !== 'undefined') res.statusCode = statuscode;
 
   return res.json(send_data);
 };

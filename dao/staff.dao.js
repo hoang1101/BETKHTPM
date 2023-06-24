@@ -1,8 +1,8 @@
-const db = require("../models");
+const db = require('../models');
 
 async function findOneStaff(phone) {
   try {
-    const response = await db.Customer.findOne({
+    const response = await db.Staff.findOne({
       where: {
         phone,
       },
