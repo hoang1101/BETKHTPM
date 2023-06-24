@@ -1,13 +1,13 @@
-const db = require("../models");
-const { getAllIngredientDao } = require("../dao/ingredient_order.dao");
+const db = require('../models');
+const { getAllIngredientDao } = require('../dao/ingredient_order.dao');
 const {
   statisticalProductDao,
   statisticalProductDaoShipper,
-} = require("../dao/order_item.dao");
-const { getAllProductdao } = require("../dao/product.dao");
+} = require('../dao/order_item.dao');
+const { getAllProductdao } = require('../dao/product.dao');
 
-const { ReE, SS } = require("../utils/util.service");
-const { getAllShipperDao } = require("../dao/shipper.dao");
+const { ReE, SS } = require('../utils/util.service');
+const { getAllShipperDao } = require('../dao/shipper.dao');
 
 exports.getAllIngredient = async (req, res) => {
   try {
@@ -30,7 +30,7 @@ exports.statisticalProduct = async (req, res) => {
       for (const j of data) {
         if (i.id === j.product_id) {
           kt = kt + 1;
-          console.log("hihi");
+          console.log('hihi');
         }
       }
       datatk.push({ ...i.dataValues, soluong: kt });
@@ -67,6 +67,7 @@ exports.statisticalRevenueProduct = async (req, res) => {
     // console.log(tong);
 
     return res.status(200).json({
+      success: true,
       datatk,
       tong,
     });
