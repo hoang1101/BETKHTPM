@@ -3,13 +3,17 @@ module.exports = (sequelize, DataTypes) => {
   var Model = sequelize.define(
     "Order_Item",
     {
-      order_id: {
+      id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
       },
+      order_id: {
+        type: DataTypes.INTEGER,
+        // primaryKey: true,
+      },
       product_id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
+        // primaryKey: true,
       },
       price: {
         type: Sequelize.DECIMAL(10, 2),
@@ -35,6 +39,10 @@ module.exports = (sequelize, DataTypes) => {
     Model.belongsTo(models.Order, {
       foreignKey: "order_id",
       as: "order",
+    });
+    Model.hasOne(models.Evaluate, {
+      foreignKey: "id",
+      as: "evaluate",
     });
   };
   return Model;
