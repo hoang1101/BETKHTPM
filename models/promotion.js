@@ -11,7 +11,9 @@ module.exports = (sequelize, DataTypes) => {
       product_id: {
         type: DataTypes.INTEGER,
       },
-
+      staff_id: {
+        type: DataTypes.INTEGER,
+      },
       percent: {
         type: DataTypes.INTEGER,
       },
@@ -32,6 +34,10 @@ module.exports = (sequelize, DataTypes) => {
     Model.belongsTo(models.Product, {
       foreignKey: "product_id",
       as: "product",
+    });
+    Model.belongsTo(models.Staff, {
+      foreignKey: "staff_id",
+      as: "staff",
     });
   };
   return Model;

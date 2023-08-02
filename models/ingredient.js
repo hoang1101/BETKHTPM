@@ -15,7 +15,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
       },
       quantity: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
       },
     },
     {
@@ -25,9 +25,9 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Model.associate = (models) => {
-    Model.hasMany(models.Ingredient_Order, {
+    Model.hasMany(models.IngredientOrderItem, {
       foreignKey: "ingredient_id",
-      as: "ingredient_order",
+      as: "ingredient_order_item",
     });
     Model.belongsTo(models.Measure, {
       foreignKey: "measure_id",

@@ -1,8 +1,16 @@
 const bcrypt = require("bcrypt");
 const authController = require("../services/auth.service");
 const db = require("../models");
-const { findOneUser } = require("../dao/customer.dao");
+const speakeasy = require("speakeasy");
+const emailExistence = require("email-existence");
+const { findOneUser, findOneUserEmail } = require("../dao/customer.dao");
 const { findOneStaff } = require("../dao/staff.dao");
+const { ReS, ReE, to } = require("../utils/util.service");
+const { sendMail } = require("../utils/mailer");
+const {
+  ContentActiveAccount_vi,
+  ContentActiveAccountOTP,
+} = require("../template/email");
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 
@@ -67,7 +75,7 @@ exports.loginStaff = async (req, res) => {
         data: customer,
       });
     } else {
-      return res.status(200).json({
+      return res.status(400).json({
         success: false,
         mgs,
       });
@@ -84,9 +92,8 @@ exports.loginStaff = async (req, res) => {
 // register Customer
 
 exports.register = async (req, res) => {
-  const { password, fullname, email, phone, roleId, address } = req.body;
-  console.log(req.body);
   try {
+    const { password, fullname, email, phone, roleId, address } = req.body;
     if (!password || !fullname || !email || !phone)
       return res.status(400).json({
         success: false,
@@ -94,16 +101,39 @@ exports.register = async (req, res) => {
         msg: "Missing inputs !",
       });
     const response = await authController.registerService(req.body);
+    //check eamil có tồn tại không
 
     if (response.success === true) {
+      if (!email) {
+        return res.status(404).json({
+          success: false,
+          msg: "Not Found",
+        });
+      } else {
+        emailExistence.check(email, async (error, resmail) => {
+          if (!resmail) {
+            return ReE(res, "Email không tồn tại", 200, 1000);
+          } else {
+            let [err, da] = await to(
+              sendMail({
+                to: email,
+                subject: "Thông báo hệ thống",
+                body: ContentActiveAccount_vi(fullname),
+              })
+            );
+            if (err) return ReE(res, err, 200, 1000);
+          }
+        });
+      }
+
       return res.status(200).json({
         success: true,
         response,
       });
     } else {
-      return res.status(200).json({
+      return res.status(400).json({
         success: false,
-        response,
+        msg: "Error Register",
       });
     }
   } catch (error) {
@@ -119,7 +149,6 @@ exports.register = async (req, res) => {
 
 exports.registerStaff = async (req, res) => {
   const { password, fullname, email, phone, roleId, address } = req.body;
-  console.log(req.body);
   try {
     if (!password || !fullname || !email || !phone || !roleId)
       return res.status(400).json({
@@ -130,14 +159,36 @@ exports.registerStaff = async (req, res) => {
     const response = await authController.registerServiceStaff(req.body);
 
     if (response.success === true) {
+      // if (!email) {
+      //   return res.status(404).json({
+      //     success: false,
+      //     msg: "Not Found",
+      //   });
+      // } else {
+      //   emailExistence.check(email, async (error, resmail) => {
+      //     if (!resmail) {
+      //       return ReE(res, "Email không tồn tại", 200, 1000);
+      //     } else {
+      //       let [err, da] = await to(
+      //         sendMail({
+      //           to: email,
+      //           subject: "Thông báo hệ thống",
+      //           body: ContentActiveAccount_vi(fullname),
+      //         })
+      //       );
+      //       if (err) return ReE(res, err, 200, 1000);
+      //     }
+      //   });
+      // }
+
       return res.status(200).json({
         success: true,
         response,
       });
     } else {
-      return res.status(200).json({
+      return res.status(400).json({
         success: false,
-        response,
+        msg: "Error Register",
       });
     }
   } catch (error) {
@@ -145,6 +196,158 @@ exports.registerStaff = async (req, res) => {
       success: false,
       error: -1,
       msg: "Fail at auth controller: " + error,
+    });
+  }
+};
+
+exports.sendEmailOTP = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await findOneUserEmail(email);
+
+    if (user) {
+      // Tạo một mã OTP ngẫu nhiên sử dụng thư viện speakeasy
+      const secret = speakeasy.generateSecret({ length: 6 });
+      const token = speakeasy.totp({
+        secret: secret.base32,
+        encoding: "base32",
+      });
+      //check eamil có tồn tại không
+
+      if (!email) {
+        return res.status(404).json({
+          success: false,
+          msg: "Not Found",
+        });
+      } else {
+        emailExistence.check(email, async (error, resmail) => {
+          if (!resmail) {
+            return ReE(res, "mail không tồn tại", 200, 1000);
+          } else {
+            let [err, da] = await to(
+              sendMail({
+                to: email,
+                subject: "Kích hoạt tài khoản",
+                body: ContentActiveAccountOTP(user.fullname, token),
+              })
+            );
+            if (err) return ReE(res, err, 200, 1000);
+
+            return ReS(
+              res,
+              {
+                token: secret.base32,
+              },
+              200
+            );
+          }
+        });
+      }
+    } else {
+      return ReE(res, error);
+    }
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      err: -1,
+      msg: "Fail at auth controller: " + err,
+    });
+  }
+};
+
+exports.VerifyOTP = (req, res) => {
+  const token = req.body.token;
+  const otp = req.body.otp;
+
+  // Kiểm tra tính hợp lệ của email và token ở đây
+
+  // Kiểm tra tính hợp lệ của mã OTP
+  const verified = speakeasy.totp.verify({
+    secret: token,
+    encoding: "base32",
+    token: otp,
+    window: 6,
+  });
+
+  if (verified) {
+    // Mã OTP đúng, tạo tài khoản mới ở đây
+    res.send({ success: true });
+  } else {
+    // Mã OTP sai
+    res.send({ success: false });
+  }
+};
+exports.ResetPassword = async (req, res) => {
+  const { email } = req.body;
+  try {
+    //check eamil có tồn tại không
+
+    if (!email) {
+      return res.status(404).json({
+        success: false,
+        msg: "Not Found",
+      });
+    } else {
+      const checkEmail = await db.User.findOne({
+        where: {
+          email: email,
+        },
+      });
+      if (!checkEmail) {
+        return res.status(200).json({
+          success: false,
+          msg: "Không có tài khoản nào có Email này!",
+        });
+      }
+      const secret = speakeasy.generateSecret({ length: 6 });
+      const token = speakeasy.totp({
+        secret: secret.base32,
+        encoding: "base32",
+      });
+      emailExistence.check(email, async (error, resmail) => {
+        if (!resmail) {
+          return ReE(res, "mail không tồn tại", 200, 1000);
+        } else {
+          let [err, da] = await to(
+            sendMail({
+              to: email,
+              subject: "Subject Active Account",
+              body: token,
+            })
+          );
+          if (err) return ReE(res, err, 200, 1000);
+
+          try {
+            const updatePassword = await db.User.update(
+              { password: hashPassword(token) },
+              {
+                where: { email: email },
+              }
+            );
+            if (updatePassword) {
+              return ReS(
+                res,
+                {
+                  msg: "mk mới của bạn đã được gửi về mail của bạn",
+                },
+                200
+              );
+            }
+          } catch (error) {
+            return res.status(500).json({
+              success: false,
+              error: -1,
+              msg: "khong thay đổi được mật khâuw" + error,
+            });
+          }
+        }
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({
+      success: false,
+      err: -1,
+      msg: "Fail at auth controller: " + err,
     });
   }
 };

@@ -1,4 +1,4 @@
-// const { to } = require("await-to-js");
+const { to } = require("await-to-js");
 // const pe = require("parse-error");
 // //dùng await to, promise
 // module.exports.to = async (promise) => {
@@ -43,6 +43,13 @@
 //   throw new Error(err_message);
 // };
 
+module.exports.to = async (promise) => {
+  let err, res;
+  [err, res] = await to(promise);
+  if (err) return [pe(err)];
+
+  return [null, res];
+};
 //khi trả về Error Web Response
 module.exports.ReE = function (res, error) {
   // Error Web Response
@@ -50,30 +57,26 @@ module.exports.ReE = function (res, error) {
   return res.status(500).json({
     success: false,
     error: -1,
-    msg: 'Fail at auth controller: ' + error,
+    msg: "Fail at auth controller: " + error,
   });
 };
 //trả về Success Web Response
 module.exports.ReS = function (res, stt, text) {
   // Success Web Response
-  console.log(text);
+  // console.log(text);
   return res.json({ success: true, code: stt, msg: text });
 };
-//trả trực tiếp về lỗi
-module.exports.TE = function (err_message, log) {
-  // TE stands for Throw Error
-  if (log === true) {
-    console.error(err_message);
-  }
-  throw new Error(err_message);
+module.exports.ReF = function (res, stt, text) {
+  // Success Web Response
+  // console.log(text);
+  return res.json({ success: false, code: stt, msg: text });
 };
-
 module.exports.SS = function (res, data, satus = 200) {
   let send_data = { success: true };
-  if (typeof data == 'object') {
+  if (typeof data == "object") {
     send_data = Object.assign(data, send_data); //merge the objects
   }
-  if (typeof code !== 'undefined') res.satus = satus;
+  if (typeof code !== "undefined") res.satus = satus;
   return res.json({ success: true, data: send_data });
 };
 
@@ -81,11 +84,24 @@ module.exports.TT = function (res, data, statuscode = 200) {
   // Success Web Response
   let send_data = { success: true };
 
-  if (typeof data == 'object') {
+  if (typeof data == "object") {
     send_data = Object.assign(data, send_data); //merge the objects
   }
 
-  if (typeof code !== 'undefined') res.statusCode = statuscode;
+  if (typeof code !== "undefined") res.statusCode = statuscode;
 
   return res.json(send_data);
+};
+
+module.exports.ReT = function (res, data, statuscode = 200) {
+  // Success Web Response
+  let send_data = { success: true };
+
+  if (typeof data == "object") {
+    send_data = Object.assign(data, send_data); //merge the objects
+  }
+
+  if (typeof code !== "undefined") res.statusCode = statuscode;
+
+  return res.json({ success: true, data: send_data });
 };

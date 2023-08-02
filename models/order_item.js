@@ -5,6 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     {
       id: {
         type: DataTypes.INTEGER,
+        autoIncrement: true,
         primaryKey: true,
       },
       order_id: {
@@ -36,12 +37,12 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "product_id",
       as: "product",
     });
-    Model.belongsTo(models.Order, {
+    Model.belongsTo(models.Orders, {
       foreignKey: "order_id",
-      as: "order",
+      as: "orders",
     });
     Model.hasOne(models.Evaluate, {
-      foreignKey: "id",
+      foreignKey: "id_orderitem",
       as: "evaluate",
     });
   };

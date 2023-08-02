@@ -1,6 +1,7 @@
-const { getAllProductdao } = require("../dao/product.dao");
+const { Op } = require("sequelize");
+const { getAllProductdao, searchProductDao } = require("../dao/product.dao");
 const { getRecipreByIdDao, UpdateRecipeDao } = require("../dao/recipre.dao");
-const { SS, ReE, TT } = require("../utils/util.service");
+const { SS, ReE, TT, ReS } = require("../utils/util.service");
 exports.getAllProduct = async (req, res) => {
   try {
     const data = await getAllProductdao();
@@ -28,5 +29,49 @@ exports.updateRecipe = async (req, res) => {
     return SS(res, dataupdate);
   } catch (error) {
     return ReE(res, error);
+  }
+};
+
+exports.SearchProduct = async (req, res) => {
+  try {
+    const page = req.query?.page * 1;
+    const limit = req.query?.limit * 1;
+    const search = req.query?.search;
+    let condition = {};
+    let response = {};
+    if (page || limit || search) {
+      if (!page || !limit)
+        return ReE(
+          res,
+          getTranslate("Missing Data Field", language),
+          400,
+          errorCode.DataNull
+        );
+      if (search) {
+        condition = {
+          ...condition,
+          ...{
+            name: { [Op.like]: `%${search}%` },
+          },
+        };
+      }
+      const { rows, count } = await searchProductDao(
+        condition,
+        page - 1,
+        limit
+      );
+      response.count = count;
+      response.product = rows;
+    }
+    return res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: -1,
+      msg: "Fail at auth controller: " + error,
+    });
   }
 };

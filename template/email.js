@@ -1,0 +1,25 @@
+exports.ContentActiveAccount_vi = (fullname) => {
+  return (
+    " <p>Email này được gửi đến cho " +
+    fullname +
+    "</p>" +
+    "<p>Tài khoản của bạn đã được kích hoạt. Bạn có thể đăng nhập vào để sử dụng dịch vụ" +
+    "</a>.</p>" +
+    '<p>Nếu bạn có thắc mắc, vui lòng liên hệ với chúng tôi qua địa chỉ email <a href="support.phuclong@gmail.com">support.phuclong@gmail.com</a>' +
+    "</p>Trân Trọng,<br>" +
+    "Phúc Long" +
+    "."
+  );
+};
+exports.ContentActiveAccountOTP = (fullname, token) => {
+  return (
+    "<p>Xin chào " +
+    fullname +
+    "</p>" +
+    "<p>Mã OTP của bạn là " +
+    token +
+    ", vui lòng nhập mã OTP vào ứng dụng để hoàn tất quá trình đăng ký tài khoản.</p>" +
+    "<p>Xin cảm ơn và chào mừng bạn đến với hệ thống của hàng trực tuyến của Phúc Long.</p>" +
+    "Trân Trọng,<br>Phúc Long."
+  );
+};

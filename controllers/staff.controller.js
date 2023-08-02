@@ -1,18 +1,18 @@
-const {} = require('./product.controller');
+const {} = require("./product.controller");
 const {
   AllOrderDao,
   AcceptOrderDao,
   CancleOrderDao,
   getOrderById,
-} = require('../dao/order.dao');
+} = require("../dao/order.dao");
 const {
   createProductdao,
   editProductdao,
   deleteProductdao,
   getProductdao,
-} = require('../dao/product.dao');
-const { createRecipe } = require('../dao/recipre.dao');
-const { SS, TT, ReS } = require('../utils/util.service');
+} = require("../dao/product.dao");
+const { createRecipe } = require("../dao/recipre.dao");
+const { SS, TT, ReS } = require("../utils/util.service");
 
 exports.createProduct = async (req, res) => {
   try {
@@ -34,14 +34,14 @@ exports.createProduct = async (req, res) => {
     } else {
       return res.status(400).json({
         success: false,
-        msg: 'Loi khong tao thanh cong!',
+        msg: "Loi khong tao thanh cong!",
       });
     }
   } catch (error) {
     return res.status(500).json({
       success: false,
       error: -1,
-      msg: 'Fail at auth controller: ' + error,
+      msg: "Fail at auth controller: " + error,
     });
   }
 };
@@ -59,14 +59,14 @@ exports.editProduct = async (req, res) => {
     } else {
       return res.status(400).json({
         success: false,
-        msg: 'Loi khong tao thanh cong!',
+        msg: "Loi khong tao thanh cong!",
       });
     }
   } catch (error) {
     return res.status(500).json({
       success: false,
       error: -1,
-      msg: 'Fail at auth controller: ' + error,
+      msg: "Fail at auth controller: " + error,
     });
   }
 };
@@ -76,7 +76,7 @@ exports.deleteProduct = async (req, res) => {
     const { id } = req.params;
     let product = await getProductdao(id);
     if (!product) {
-      return ReE(res, 400, 'Khong ton tai');
+      return ReE(res, 400, "Khong ton tai");
     } else {
       const data = await deleteProductdao(id);
       return res.status(200).json({
@@ -87,7 +87,7 @@ exports.deleteProduct = async (req, res) => {
     return res.status(500).json({
       success: false,
       error: -1,
-      msg: 'Fail at auth controller: ' + error,
+      msg: "Fail at auth controller: " + error,
     });
   }
 };
@@ -104,7 +104,7 @@ exports.AllOrder = async (req, res) => {
     return res.status(500).json({
       success: false,
       error: -1,
-      msg: 'Fail at auth controller: ' + error,
+      msg: "Fail at auth controller: " + error,
     });
   }
 };
@@ -112,15 +112,15 @@ exports.AcceptOrder = async (req, res) => {
   try {
     const { id } = req.params;
 
-    const { staff_id, shipper_name } = req.body;
+    const { staff_id } = req.body;
 
-    const order = await AcceptOrderDao(id, staff_id, shipper_name);
+    const order = await AcceptOrderDao(id, staff_id);
     return ReS(res, order, 200);
   } catch (error) {
     return res.status(500).json({
       success: false,
       error: -1,
-      msg: 'Fail at auth controller: ' + error,
+      msg: "Fail at auth controller: " + error,
     });
   }
 };
@@ -135,7 +135,7 @@ exports.CancleOrder = async (req, res) => {
     return res.status(500).json({
       success: false,
       error: -1,
-      msg: 'Fail at auth controller: ' + error,
+      msg: "Fail at auth controller: " + error,
     });
   }
 };
@@ -149,7 +149,7 @@ exports.detailOrderByid = async (req, res) => {
     return res.status(500).json({
       success: false,
       error: -1,
-      msg: 'Fail at auth controller: ' + error,
+      msg: "Fail at auth controller: " + error,
     });
   }
 };

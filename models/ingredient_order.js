@@ -11,15 +11,6 @@ module.exports = (sequelize, DataTypes) => {
       staff_id: {
         type: DataTypes.INTEGER,
       },
-      ingredient_id: {
-        type: DataTypes.INTEGER,
-      },
-      price: {
-        type: DataTypes.INTEGER,
-      },
-      quantity: {
-        type: DataTypes.INTEGER,
-      },
     },
     {
       timestamps: false,
@@ -32,9 +23,9 @@ module.exports = (sequelize, DataTypes) => {
       foreignKey: "staff_id",
       as: "staff",
     });
-    Model.belongsTo(models.Ingredient, {
-      foreignKey: "ingredient_id",
-      as: "ingredient",
+    Model.hasMany(models.IngredientOrderItem, {
+      foreignKey: "ingredient_order_id",
+      as: "ingredient_order_item",
     });
   };
   return Model;

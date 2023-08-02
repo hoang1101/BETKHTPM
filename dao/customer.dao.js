@@ -15,6 +15,107 @@ async function findOneUser(phone) {
   }
 }
 
+async function findOneUserEmail(email) {
+  try {
+    const response = await db.Customer.findOne({
+      where: {
+        email,
+      },
+      raw: true,
+    });
+
+    return response;
+  } catch (error) {
+    throw new Error(`${error}, traceback findOneUserEmail()`);
+  }
+}
+
+async function getAllOrderByIdDao(customer_id) {
+  try {
+    const data = await db.Order.findAll({
+      where: {
+        customer_id: customer_id,
+        status: null,
+      },
+      raw: true,
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
+    return data;
+  } catch (error) {
+    throw new Error(`${error}, traceback getAllOrderByIdDao()`);
+  }
+}
+
+async function getAllOrderByIdDaoTrue(customer_id) {
+  try {
+    const data = await db.Order.findAll({
+      where: {
+        customer_id: customer_id,
+        status: 1,
+      },
+      raw: true,
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
+    return data;
+  } catch (error) {
+    throw new Error(`${error}, traceback getAllOrderByIdDaoTrue()`);
+  }
+}
+
+async function getAllOrderByIdDaoFalse(customer_id) {
+  try {
+    const data = await db.Order.findAll({
+      where: {
+        customer_id: customer_id,
+        status: 0,
+      },
+      raw: true,
+      attributes: { exclude: ["createdAt", "updatedAt"] },
+    });
+    return data;
+  } catch (error) {
+    throw new Error(`${error}, traceback getAllOrderByIdDaoFalse()`);
+  }
+}
+
+async function editProfileDao({
+  id,
+  fullname,
+  email,
+  phone,
+  address,
+  gender,
+  birthday,
+}) {
+  try {
+    const user = await db.Customer.update(
+      {
+        fullname: fullname,
+        gender: gender,
+        email: email,
+        phone: phone,
+        birthday: birthday,
+        address: address,
+      },
+      {
+        where: { id: id },
+      }
+    );
+    if (user) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    throw new Error(`${error}, traceback editProfileDao()`);
+  }
+}
+
 module.exports = {
   findOneUser,
+  findOneUserEmail,
+  getAllOrderByIdDao,
+  getAllOrderByIdDaoFalse,
+  getAllOrderByIdDaoTrue,
+  editProfileDao,
 };

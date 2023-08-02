@@ -16,17 +16,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       email: {
         type: DataTypes.STRING,
-        unique: true,
-        validate: {
-          isEmail: true,
-        },
+        allowNull: false,
+        isEmail: true,
       },
       phone: {
         type: DataTypes.STRING,
-        unique: true,
-        validate: {
-          len: [10, 10],
-        },
+        allowNull: false,
       },
       address: {
         type: DataTypes.STRING,
@@ -35,7 +30,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
       },
       birthday: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
       },
     },
     {
@@ -45,9 +40,13 @@ module.exports = (sequelize, DataTypes) => {
   );
 
   Model.associate = (models) => {
-    Model.hasMany(models.Order, {
+    Model.hasMany(models.Orders, {
       foreignKey: "customer_id",
-      as: "order",
+      as: "orders",
+    });
+    Model.hasMany(models.Evaluate, {
+      foreignKey: "customer_id",
+      as: "evaluate",
     });
   };
   return Model;

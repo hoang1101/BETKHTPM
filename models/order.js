@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 module.exports = (sequelize, DataTypes) => {
   var Model = sequelize.define(
-    "Order",
+    "Orders",
     {
       id: {
         type: DataTypes.INTEGER,
@@ -17,16 +17,16 @@ module.exports = (sequelize, DataTypes) => {
       address: {
         type: DataTypes.STRING,
       },
-      shipper: {
-        type: DataTypes.INTEGER,
-      },
       status: {
         type: DataTypes.BOOLEAN,
+      },
+      date: {
+        type: DataTypes.DATE,
       },
     },
     {
       timestamps: true,
-      freezeTableName: "order",
+      freezeTableName: "orders",
     }
   );
 
@@ -42,10 +42,6 @@ module.exports = (sequelize, DataTypes) => {
     Model.belongsTo(models.Staff, {
       foreignKey: "staff_id",
       as: "staff",
-    });
-    Model.belongsTo(models.Shipper, {
-      foreignKey: "shipper",
-      as: "shipper_",
     });
   };
   return Model;

@@ -112,10 +112,30 @@ async function deleteProductdao(id) {
   }
 }
 
+async function searchProductDao(condition, page, limit) {
+  try {
+    const { rows, count } = await db.Product.findAndCountAll({
+      where: condition,
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
+      },
+      offset: page * limit,
+      limit: limit,
+    });
+
+    return { rows, count };
+  } catch (error) {
+    throw new Error(
+      `Error: ${error}, traceback at searchProductDao function at product.dao.js file`
+    );
+  }
+}
+
 module.exports = {
   getAllProductdao,
   createProductdao,
   editProductdao,
   deleteProductdao,
   getProductdao,
+  searchProductDao,
 };

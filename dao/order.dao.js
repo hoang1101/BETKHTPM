@@ -1,13 +1,22 @@
-const db = require('../models');
-const moment = require('moment');
+const db = require("../models");
+const moment = require("moment");
 
 async function createOrderDao(data, address) {
   try {
     // console.log("dao i " + data[0].idCus);
-    const order = await db.Order.create({
+    const order = await db.Orders.create({
       customer_id: data[0].idCus,
       address: address,
       status: null,
+      date: new Date(
+        moment(
+          new Date(
+            new Date().getFullYear(),
+            new Date().getMonth(),
+            new Date().getDate()
+          )
+        ).format("YYYY-MM-DD")
+      ),
     });
     for (let i of data) {
       const orderItem = await db.Order_Item.create({
@@ -22,7 +31,7 @@ async function createOrderDao(data, address) {
               new Date().getMonth(),
               new Date().getDate()
             )
-          ).format('YYYY-MM-DD')
+          ).format("YYYY-MM-DD")
         ),
       });
     }
@@ -33,11 +42,11 @@ async function createOrderDao(data, address) {
 
 async function AllOrderDao() {
   try {
-    const order = await db.Order.findAll({
+    const order = await db.Orders.findAll({
       // where: {
       //   status: null,
       // },
-      attributes: { exclude: ['createdAt', 'updatedAt'] },
+      attributes: { exclude: ["createdAt", "updatedAt"] },
     });
 
     return order;
@@ -46,7 +55,7 @@ async function AllOrderDao() {
   }
 }
 
-async function AcceptOrderDao(id, staff_id, shipper_name) {
+async function AcceptOrderDao(id, staff_id) {
   try {
     const data = await db.Order_Item.findAll({ where: { order_id: id } });
 
@@ -68,15 +77,11 @@ async function AcceptOrderDao(id, staff_id, shipper_name) {
         }
       }
     }
-    const shipper = await db.Shipper.findOne({
-      shipper_name: shipper_name,
-    });
 
-    const order = await db.Order.update(
+    const order = await db.Orders.update(
       {
         staff_id: staff_id,
         status: 1,
-        shipper: shipper.id,
       },
       {
         where: {
@@ -92,7 +97,7 @@ async function AcceptOrderDao(id, staff_id, shipper_name) {
 
 async function CancleOrderDao(id, staff_id) {
   try {
-    const order = await db.Order.update(
+    const order = await db.Orders.update(
       {
         staff_id: staff_id,
         status: 0,
@@ -113,7 +118,7 @@ async function getOrderById(id) {
   try {
     const order = await db.Order_Item.findAll({
       where: { order_id: id },
-      include: [{ model: db.Product, as: 'product' }],
+      include: [{ model: db.Product, as: "product" }],
     });
 
     return order;

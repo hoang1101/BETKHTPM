@@ -5,13 +5,20 @@ module.exports = (sequelize, DataTypes) => {
     {
       id: {
         type: DataTypes.INTEGER,
+        autoIncrement: true,
         primaryKey: true,
+      },
+      id_orderitem: {
+        type: DataTypes.INTEGER,
+      },
+      customer_id: {
+        type: DataTypes.INTEGER,
       },
       product_id: {
         type: DataTypes.INTEGER,
       },
       start: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.FLOAT,
       },
       img: {
         type: DataTypes.STRING,
@@ -32,8 +39,12 @@ module.exports = (sequelize, DataTypes) => {
       as: "product",
     });
     Model.belongsTo(models.Order_Item, {
-      foreignKey: "id",
+      foreignKey: "id_orderitem",
       as: "order_item",
+    });
+    Model.belongsTo(models.Customer, {
+      foreignKey: "customer_id",
+      as: "customer",
     });
   };
   return Model;
