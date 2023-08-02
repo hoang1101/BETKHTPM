@@ -7,24 +7,25 @@ exports.DanhGiaSanPham = async (req, res) => {
   try {
     const { id_orderitem, customer_id, product_id, start, img, comment } =
       req.body;
+
     if (!start || !comment) return ReS(res, 400, "Ban thieu Field!");
     else {
-      const data = await cloudinary.v2.uploader.upload(
-        img,
-        {
-          folder: "danhgia",
-          width: 320,
-          height: 320,
-          crop: "scale",
-        },
-        function (error, result) {}
-      );
+      // const data = await cloudinary.v2.uploader.upload(
+      //   img,
+      //   {
+      //     folder: "danhgia",
+      //     width: 320,
+      //     height: 320,
+      //     crop: "scale",
+      //   },
+      //   function (error, result) {}
+      // );
       const evaluate = await db.Evaluate.create({
         id_orderitem,
         customer_id,
         product_id,
         start,
-        img: data.url,
+        // img: data.url,
         comment,
       });
       if (evaluate) {
@@ -37,6 +38,43 @@ exports.DanhGiaSanPham = async (req, res) => {
     return ReE(res, error);
   }
 };
+
+exports.EditDanhGiaSanPham = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { start, img, comment } = req.body;
+
+    if (!start || !comment) return ReS(res, 400, "Ban thieu Field!");
+    else {
+      // const data = await cloudinary.v2.uploader.upload(
+      //   img,
+      //   {
+      //     folder: "danhgia",
+      //     width: 320,
+      //     height: 320,
+      //     crop: "scale",
+      //   },
+      //   function (error, result) {}
+      // );
+      const evaluate = await db.Evaluate.create({
+        id_orderitem,
+        customer_id,
+        product_id,
+        start,
+        // img: data.url,
+        comment,
+      });
+      if (evaluate) {
+        return ReS(res, 200, "Tao thanh cong!");
+      } else {
+        return ReF(res, 400, "Tao khong thanh cong!");
+      }
+    }
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
+
 // lay ra danh gia cua mot san pham
 exports.getEvaluateProduct = async (req, res) => {
   try {
@@ -59,7 +97,7 @@ exports.getEvaluateCustomer = async (req, res) => {
     const { customer_id } = req.body;
     const result = await db.sequelize.query(
       `
-        SELECT product.*
+        SELECT product.*,oi.*
         from product
         join order_item oi on oi.product_id= product.id
         LEFT JOIN evaluate e ON oi.id = e.id_orderitem

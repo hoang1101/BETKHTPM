@@ -32,7 +32,7 @@ async function findOneUserEmail(email) {
 
 async function getAllOrderByIdDao(customer_id) {
   try {
-    const data = await db.Order.findAll({
+    const data = await db.Orders.findAll({
       where: {
         customer_id: customer_id,
         status: null,
@@ -48,7 +48,7 @@ async function getAllOrderByIdDao(customer_id) {
 
 async function getAllOrderByIdDaoTrue(customer_id) {
   try {
-    const data = await db.Order.findAll({
+    const data = await db.Orders.findAll({
       where: {
         customer_id: customer_id,
         status: 1,
@@ -64,7 +64,7 @@ async function getAllOrderByIdDaoTrue(customer_id) {
 
 async function getAllOrderByIdDaoFalse(customer_id) {
   try {
-    const data = await db.Order.findAll({
+    const data = await db.Orders.findAll({
       where: {
         customer_id: customer_id,
         status: 0,

@@ -23,7 +23,7 @@ router.put("/change-password/:user_id", changePassword);
 
 /// dánh giá
 router.post("/evaluate-customer", DanhGiaSanPham);
-
-router.get("/allOrderItem", getEvaluateCustomer);
+/// những sản phảm đã mua nhưng chua đánh giá
+router.get("/allOrderItemNotRate", getEvaluateCustomer);
 router.get("/allOrderItemDone", getEvaluateCustomerDone);
 module.exports = router;
