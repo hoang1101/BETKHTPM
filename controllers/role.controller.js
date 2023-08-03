@@ -12,7 +12,7 @@ exports.getAllRole = async (req, res) => {
 
 exports.getRoleById = async (req, res) => {
   try {
-    const { roleId } = req.body;
+    const { roleId } = req.params;
     const role = await db.Role.findOne({
       where: {
         id: roleId,

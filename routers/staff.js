@@ -6,6 +6,11 @@ const {
   FindAcountCustomer,
 } = require("../controllers/admin.controller");
 const { ImportIngredient } = require("../controllers/ingredient.controller");
+const {
+  CreatePromotion,
+  editPromotion,
+  deletePromotion,
+} = require("../controllers/promotion.controller");
 const { getAllRole, getRoleById } = require("../controllers/role.controller");
 const {
   createProduct,
@@ -29,6 +34,7 @@ const {
   statisticalRevenueProduct,
   statisticalShipper,
   statisticalShipperRevenue,
+  statisticalRevenueProductDate,
 } = require("../controllers/statistical.controller");
 
 const router = require("express").Router();
@@ -55,8 +61,8 @@ router.get("/all-ingre", getAllIngredient);
 //thong ke
 router.get("/statistical", statisticalProduct);
 router.get("/statistical-revenue", statisticalRevenueProduct);
-router.get("/statistical-shipper", statisticalShipper);
-router.get("/statistical-shipper-revenue", statisticalShipperRevenue);
+// thong ke doan thu theo ngay tuy chon
+router.post("/statistical-revenue-date", statisticalRevenueProductDate);
 
 // quản lý nhân viên
 
@@ -72,10 +78,16 @@ router.delete("/delete-acount/:id", deleteStaff);
 router.put("/edit-acount", editProfileByAdmin);
 // xem thong tin ca nhan
 // lay role theo id
-router.get("/get-role-id", getRoleById);
+router.get("/get-role-id/:roleId", getRoleById);
 
 // quan ly tai khoan khach hang
 router.put("/lock-account-customer", LockCuatomer);
 router.put("/unlock-account-customer", UnLockCustomer);
 router.get("/find-acount-customer", FindAcountCustomer);
+
+// tao khuyen mai
+router.post("/create-promotion", CreatePromotion);
+router.put("/edit-promotion", editPromotion);
+router.delete("/delete-promotion/:id", deletePromotion);
+
 module.exports = router;

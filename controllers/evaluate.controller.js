@@ -10,16 +10,21 @@ exports.DanhGiaSanPham = async (req, res) => {
 
     if (!start || !comment) return ReS(res, 400, "Ban thieu Field!");
     else {
-      const data = await cloudinary.v2.uploader.upload(
-        img,
-        {
-          folder: "danhgia",
-          width: 320,
-          height: 320,
-          crop: "scale",
-        },
-        function (error, result) {}
-      );
+      let data;
+      if (img != "") {
+        data = await cloudinary.v2.uploader.upload(
+          img,
+          {
+            folder: "danhgia",
+            width: 320,
+            height: 320,
+            crop: "scale",
+          },
+          function (error, result) {}
+        );
+      } else {
+        data = "";
+      }
       const evaluate = await db.Evaluate.create({
         id_orderitem,
         customer_id,

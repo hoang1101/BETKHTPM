@@ -7,8 +7,8 @@ async function statisticalProductDao() {
     let data = await db.Order_Item.findAll({
       include: [
         {
-          model: db.Order,
-          as: "order",
+          model: db.Orders,
+          as: "orders",
           where: {
             status: 1,
           },
@@ -36,39 +36,29 @@ async function statisticalProductDao() {
   }
 }
 
-async function statisticalProductDaoShipper() {
+async function statisticalProductDaoDate(date_) {
   try {
-    let data = await db.Order.findAll({
+    let data = await db.Order_Item.findAll({
       include: [
         {
-          model: db.Order_Item,
-          as: "order_item",
-
+          model: db.Orders,
+          as: "orders",
           where: {
-            date: {
-              [Op.eq]: new Date(
-                moment(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate()
-                  )
-                ).format("YYYY-MM-DD")
-              ),
-            },
+            status: 1,
           },
-          // attributes: ["shipper"],
+          attributes: [],
         },
       ],
       where: {
-        status: 1,
+        date: {
+          [Op.eq]: new Date(moment(new Date(date_)).format("YYYY-MM-DD")),
+        },
       },
     });
-
     return data;
   } catch (error) {
-    throw new Error(`${error}, traceback statisticalProductDaoShipper()`);
+    throw new Error(`${error}, traceback statisticalProductDaoDate()`);
   }
 }
 
-module.exports = { statisticalProductDao, statisticalProductDaoShipper };
+module.exports = { statisticalProductDao, statisticalProductDaoDate };
