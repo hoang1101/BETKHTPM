@@ -16,14 +16,12 @@ module.exports = (sequelize, DataTypes) => {
       },
       email: {
         type: DataTypes.STRING,
-        unique: true,
         validate: {
           isEmail: true,
         },
       },
       phone: {
         type: DataTypes.STRING,
-        unique: true,
         validate: {
           len: [10, 10],
         },
@@ -39,6 +37,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       roleId: {
         type: DataTypes.INTEGER,
+      },
+      isAcctive: {
+        type: DataTypes.BOOLEAN,
       },
     },
     {

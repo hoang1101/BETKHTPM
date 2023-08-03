@@ -7,7 +7,7 @@ const {
   getAllOrderByIdDaoFalse,
   editProfileDao,
 } = require("../dao/customer.dao");
-const { ReE, SS, TT, ReT, ReS } = require("../utils/util.service");
+const { ReE, SS, TT, ReT, ReS, ReF } = require("../utils/util.service");
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 const checkOut = async (req, res) => {
@@ -76,7 +76,7 @@ const editProfile = async (req, res) => {
     if (user) {
       return ReS(res, 200, "Update successfull");
     } else {
-      return ReS(res, 400, "Update Fail");
+      return ReF(res, 400, "Update Fail");
     }
   } catch (error) {
     return ReE(res, error);
@@ -92,9 +92,9 @@ const changePassword = async (req, res) => {
       !req.body.passwordOld ||
       !req.body.passwordNew
     ) {
-      return ReS(res, 400, "Bạn thiếu field");
+      return ReF(res, 400, "Bạn thiếu field");
     } else if (req.body.passwordConfirm != req.body.passwordNew) {
-      return ReS(res, 400, "Password mới không hợp lệ");
+      return ReF(res, 400, "Password mới không hợp lệ");
     }
     const data = await db.Customer.findOne({
       where: {
@@ -106,7 +106,7 @@ const changePassword = async (req, res) => {
       const isPassword = bcrypt.hashSync(req.body.passwordOld, data.password);
       // console.log(isPassword);
       if (isPassword != data.password) {
-        return ReS(res, 400, "Update Fail");
+        return ReF(res, 400, "Update Fail");
       } else {
         data.password = hashPassword(req.body.passwordNew);
         data.save();
@@ -121,6 +121,22 @@ const changePassword = async (req, res) => {
   }
 };
 
+// xem thong tin ca nhan
+const ViewProfileCustomer = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const ktif = await db.Customer.findOne({
+      where: { id: id },
+    });
+    if (ktif) {
+      return ReT(res, ktif, 200);
+    } else {
+      return ReF(res, 400, "Fail !");
+    }
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
 module.exports = {
   checkOut,
   getAllOrderById,
@@ -128,4 +144,5 @@ module.exports = {
   getAllOrderByIdFalse,
   editProfile,
   changePassword,
+  ViewProfileCustomer,
 };

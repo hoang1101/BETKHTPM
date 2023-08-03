@@ -1,3 +1,4 @@
+const { CheckPhone, CheckEmail } = require("../controllers/until.controller");
 const db = require("../models");
 
 async function findOneUser(phone) {
@@ -88,23 +89,31 @@ async function editProfileDao({
   birthday,
 }) {
   try {
-    const user = await db.Customer.update(
-      {
-        fullname: fullname,
-        gender: gender,
-        email: email,
-        phone: phone,
-        birthday: birthday,
-        address: address,
-      },
-      {
-        where: { id: id },
-      }
-    );
-    if (user) {
-      return true;
+    const kt = await CheckPhone(phone);
+    const ktemail = await CheckEmail(email);
+    if (kt) {
+      return ReF(res, 400, "So dien thoai bi trung !");
+    } else if (ktemail) {
+      return ReF(res, 400, "Email bi trung !");
     } else {
-      return false;
+      const user = await db.Customer.update(
+        {
+          fullname: fullname,
+          gender: gender,
+          email: email,
+          phone: phone,
+          birthday: birthday,
+          address: address,
+        },
+        {
+          where: { id: id },
+        }
+      );
+      if (user) {
+        return true;
+      } else {
+        return false;
+      }
     }
   } catch (error) {
     throw new Error(`${error}, traceback editProfileDao()`);

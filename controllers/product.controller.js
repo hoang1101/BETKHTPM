@@ -40,13 +40,7 @@ exports.SearchProduct = async (req, res) => {
     let condition = {};
     let response = {};
     if (page || limit || search) {
-      if (!page || !limit)
-        return ReE(
-          res,
-          getTranslate("Missing Data Field", language),
-          400,
-          errorCode.DataNull
-        );
+      if (!page || !limit) return ReE(res, 400, "Missing Data Field");
       if (search) {
         condition = {
           ...condition,

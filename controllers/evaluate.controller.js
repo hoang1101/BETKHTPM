@@ -10,22 +10,22 @@ exports.DanhGiaSanPham = async (req, res) => {
 
     if (!start || !comment) return ReS(res, 400, "Ban thieu Field!");
     else {
-      // const data = await cloudinary.v2.uploader.upload(
-      //   img,
-      //   {
-      //     folder: "danhgia",
-      //     width: 320,
-      //     height: 320,
-      //     crop: "scale",
-      //   },
-      //   function (error, result) {}
-      // );
+      const data = await cloudinary.v2.uploader.upload(
+        img,
+        {
+          folder: "danhgia",
+          width: 320,
+          height: 320,
+          crop: "scale",
+        },
+        function (error, result) {}
+      );
       const evaluate = await db.Evaluate.create({
         id_orderitem,
         customer_id,
         product_id,
         start,
-        // img: data.url,
+        img: data.url,
         comment,
       });
       if (evaluate) {
@@ -46,24 +46,26 @@ exports.EditDanhGiaSanPham = async (req, res) => {
 
     if (!start || !comment) return ReS(res, 400, "Ban thieu Field!");
     else {
-      // const data = await cloudinary.v2.uploader.upload(
-      //   img,
-      //   {
-      //     folder: "danhgia",
-      //     width: 320,
-      //     height: 320,
-      //     crop: "scale",
-      //   },
-      //   function (error, result) {}
-      // );
-      const evaluate = await db.Evaluate.create({
-        id_orderitem,
-        customer_id,
-        product_id,
-        start,
-        // img: data.url,
-        comment,
-      });
+      const data = await cloudinary.v2.uploader.upload(
+        img,
+        {
+          folder: "danhgia",
+          width: 320,
+          height: 320,
+          crop: "scale",
+        },
+        function (error, result) {}
+      );
+      const evaluate = await db.Evaluate.update(
+        {
+          start,
+          img: data.url,
+          comment,
+        },
+        {
+          where: { id: id },
+        }
+      );
       if (evaluate) {
         return ReS(res, 200, "Tao thanh cong!");
       } else {

@@ -32,6 +32,9 @@ module.exports = (sequelize, DataTypes) => {
       birthday: {
         type: DataTypes.DATEONLY,
       },
+      isAcctive: {
+        type: DataTypes.BOOLEAN,
+      },
     },
     {
       timestamps: false,
