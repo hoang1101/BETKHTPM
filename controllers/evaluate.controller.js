@@ -1,6 +1,6 @@
 const { Sequelize } = require("sequelize");
 const db = require("../models");
-const { ReS, ReT, ReE } = require("../utils/util.service");
+const { ReS, ReT, ReE, ReF } = require("../utils/util.service");
 const cloudinary = require("cloudinary");
 
 exports.DanhGiaSanPham = async (req, res) => {
