@@ -10,8 +10,8 @@ exports.DanhGiaSanPham = async (req, res) => {
 
     if (!start || !comment) return ReS(res, 400, "Ban thieu Field!");
     else {
-      let data;
-      if (img != "") {
+      if (img) {
+        let data;
         data = await cloudinary.v2.uploader.upload(
           img,
           {
@@ -22,21 +22,33 @@ exports.DanhGiaSanPham = async (req, res) => {
           },
           function (error, result) {}
         );
+        const evaluate = await db.Evaluate.create({
+          id_orderitem,
+          customer_id,
+          product_id,
+          start,
+          img: data.url,
+          comment,
+        });
+        if (evaluate) {
+          return ReS(res, 200, "Tao thanh cong!");
+        } else {
+          return ReF(res, 400, "Tao khong thanh cong!");
+        }
       } else {
-        data = "";
-      }
-      const evaluate = await db.Evaluate.create({
-        id_orderitem,
-        customer_id,
-        product_id,
-        start,
-        img: data.url,
-        comment,
-      });
-      if (evaluate) {
-        return ReS(res, 200, "Tao thanh cong!");
-      } else {
-        return ReF(res, 400, "Tao khong thanh cong!");
+        const evaluate = await db.Evaluate.create({
+          id_orderitem,
+          customer_id,
+          product_id,
+          start,
+          // img: data.url,
+          comment,
+        });
+        if (evaluate) {
+          return ReS(res, 200, "Tao thanh cong!");
+        } else {
+          return ReF(res, 400, "Tao khong thanh cong!");
+        }
       }
     }
   } catch (error) {
