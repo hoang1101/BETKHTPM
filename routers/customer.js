@@ -28,8 +28,8 @@ router.post("/evaluate-customer", DanhGiaSanPham);
 router.put("/evaluate-edit/:id", EditDanhGiaSanPham);
 
 /// những sản phảm đã mua nhưng chua đánh giá
-router.get("/allOrderItemNotRate", getEvaluateCustomer);
-router.get("/allOrderItemDone", getEvaluateCustomerDone);
+router.get("/allOrderItemNotRate/:customer_id", getEvaluateCustomer);
+router.get("/allOrderItemDone/:customer_id", getEvaluateCustomerDone);
 
 // xem thong tin ca nhan
 router.get("/view-myif/:id", ViewProfileCustomer);

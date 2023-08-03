@@ -96,7 +96,7 @@ exports.getEvaluateProduct = async (req, res) => {
 
 exports.getEvaluateCustomer = async (req, res) => {
   try {
-    const { customer_id } = req.body;
+    const { customer_id } = req.params;
     const result = await db.sequelize.query(
       `
         SELECT product.*,oi.*
@@ -121,7 +121,7 @@ exports.getEvaluateCustomer = async (req, res) => {
 
 exports.getEvaluateCustomerDone = async (req, res) => {
   try {
-    const { customer_id } = req.body;
+    const { customer_id } = req.params;
     const result = await db.sequelize.query(
       `
       SELECT product.* , e.*

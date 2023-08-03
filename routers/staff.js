@@ -1,6 +1,9 @@
 const {
   editProfileNhanVien,
   editProfileByAdmin,
+  LockCuatomer,
+  UnLockCustomer,
+  FindAcountCustomer,
 } = require("../controllers/admin.controller");
 const { ImportIngredient } = require("../controllers/ingredient.controller");
 const { getAllRole, getRoleById } = require("../controllers/role.controller");
@@ -71,4 +74,8 @@ router.put("/edit-acount", editProfileByAdmin);
 // lay role theo id
 router.get("/get-role-id", getRoleById);
 
+// quan ly tai khoan khach hang
+router.put("/lock-account-customer", LockCuatomer);
+router.put("/unlock-account-customer", UnLockCustomer);
+router.get("/find-acount-customer", FindAcountCustomer);
 module.exports = router;

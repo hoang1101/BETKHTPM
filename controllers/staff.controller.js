@@ -171,17 +171,23 @@ exports.detailOrderByid = async (req, res) => {
 exports.LockAccount = async (req, res) => {
   try {
     const { id } = req.body;
-
-    const staff = await db.Staff.update(
-      {
-        isAcctive: 1,
-      },
-      { where: { id: id } }
-    );
-    if (staff) {
-      return ReS(res, 200, "Successfull !");
+    const ktstaff = await db.Orders.findOne({
+      where: { staff_id: id },
+    });
+    if (ktstaff) {
+      return ReF(res, 400, "Tai khoan nay da duyet don hang !");
     } else {
-      return ReF(res, 400, "Fail!");
+      const staff = await db.Staff.update(
+        {
+          isAcctive: 1,
+        },
+        { where: { id: id } }
+      );
+      if (staff) {
+        return ReS(res, 200, "Successfull !");
+      } else {
+        return ReF(res, 400, "Fail!");
+      }
     }
   } catch (error) {
     return ReE(res, error);
@@ -309,7 +315,7 @@ exports.FindAcountStaff = async (req, res) => {
       }
       const { rows, count } = await searchStaffDao(condition, page - 1, limit);
       response.count = count;
-      response.product = rows;
+      response.staff = rows;
     }
     return res.status(200).json({
       success: true,

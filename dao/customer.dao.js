@@ -120,6 +120,25 @@ async function editProfileDao({
   }
 }
 
+async function searchCustomerDao(condition, page, limit) {
+  try {
+    const { rows, count } = await db.Customer.findAndCountAll({
+      where: condition,
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
+      },
+      offset: page * limit,
+      limit: limit,
+    });
+
+    return { rows, count };
+  } catch (error) {
+    throw new Error(
+      `Error: ${error}, traceback at searchCustomerDao function at customer.dao.js file`
+    );
+  }
+}
+
 module.exports = {
   findOneUser,
   findOneUserEmail,
@@ -127,4 +146,5 @@ module.exports = {
   getAllOrderByIdDaoFalse,
   getAllOrderByIdDaoTrue,
   editProfileDao,
+  searchCustomerDao,
 };
