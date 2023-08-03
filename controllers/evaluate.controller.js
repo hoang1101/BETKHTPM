@@ -8,7 +8,7 @@ exports.DanhGiaSanPham = async (req, res) => {
     const { id_orderitem, customer_id, product_id, start, img, comment } =
       req.body;
 
-    if (!start || !comment) return ReS(res, 400, "Ban thieu Field!");
+    if (!start || !comment) return ReF(res, 400, "Ban thieu Field!");
     else {
       if (img) {
         let data;
