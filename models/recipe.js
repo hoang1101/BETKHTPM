@@ -3,13 +3,16 @@ module.exports = (sequelize, DataTypes) => {
   var Model = sequelize.define(
     "Recipe",
     {
+      id: {
+        type: DataTypes.INTEGER,
+        autoIncrement: true,
+        primaryKey: true,
+      },
       product_id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
       },
       ingredient_id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
       },
       quantity: {
         type: DataTypes.FLOAT,

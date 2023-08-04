@@ -56,44 +56,38 @@ async function createProductdao(name, price, image, descript, recipre) {
   }
 }
 
-async function editProductdao(id, name, price, image, descript) {
+async function editProductdao(id, name, price, image, descript, recipre) {
   try {
     if (image) {
       const data = await cloudinary.v2.uploader.upload(
         image,
         function (error, result) {}
       );
-      const product = await db.Product.update(
+      let product = await db.Product.update(
         {
-          name,
-          price,
+          name: name,
+          price: price,
           image: data.url,
-          descript,
+          descript: descript,
         },
         {
-          where: id,
+          where: { id: id },
         }
       );
       return product;
     } else {
       let product = await db.Product.update(
         {
-          name,
-          price,
-          image,
-          descript,
+          name: name,
+          price: price,
+          // image: data.url,
+          descript: descript,
         },
         {
-          where: id,
+          where: { id: id },
         }
       );
-      for (let i of recipre) {
-        const data = await db.Recipe.create({
-          product_id: product.id,
-          ingredient_id: i.ingredient_id,
-          quantity: i.quantity,
-        });
-      }
+
       return product;
     }
   } catch (error) {

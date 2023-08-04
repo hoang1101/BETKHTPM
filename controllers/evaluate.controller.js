@@ -118,21 +118,21 @@ exports.getEvaluateProduct = async (req, res) => {
   try {
     const { id_product } = req.params;
     const evaluate = await db.Evaluate.findAll({
+      where: {
+        product_id: id_product,
+      },
       include: [
         {
           model: db.Product,
           as: "product",
-          attribute: ["name"],
+          attributes: ["name"],
         },
         {
           model: db.Customer,
           as: "customer",
-          attribute: ["fullname", "phone", "address"],
+          attributes: ["fullname", "email", "phone"],
         },
       ],
-      where: {
-        product_id: id_product,
-      },
     });
     return ReT(res, evaluate, 200);
   } catch (error) {
@@ -147,7 +147,7 @@ exports.getEvaluateCustomer = async (req, res) => {
     const { customer_id } = req.params;
     const result = await db.sequelize.query(
       `
-        SELECT product.*,oi.*
+        SELECT product.name,product.image,product.price,product.descript , oi.order_id
         from product
         join order_item oi on oi.product_id= product.id
         LEFT JOIN evaluate e ON oi.id = e.id_orderitem
@@ -172,10 +172,11 @@ exports.getEvaluateCustomerDone = async (req, res) => {
     const { customer_id } = req.params;
     const result = await db.sequelize.query(
       `
-      SELECT product.* , e.*
+      SELECT product.name,product.image,product.price,product.descript , e.*,c.fullname
       from product
       join order_item oi on oi.product_id= product.id
       LEFT JOIN evaluate e ON oi.id = e.id_orderitem
+      LEFT JOIN customer c ON e.customer_id = c.id
       WHERE  e.customer_id = ${customer_id}
 
   `,

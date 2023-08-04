@@ -40,6 +40,7 @@ const {
   EditAcount,
   changePasswordStaff,
   FindOrder,
+  GetAllRecipe,
 } = require("../controllers/staff.controller");
 const {
   getAllIngredient,
@@ -116,5 +117,8 @@ router.get("/all-ingredient", GetAllIngredient);
 // hoa don nhap
 router.post("/import-ingredient", ImportIngredientOrder);
 router.get("/all-i_order_i", GetAllIngredientOrderItem);
+
+//cong thuc
+router.get("/all-recipe/:product_id", GetAllRecipe);
 
 module.exports = router;

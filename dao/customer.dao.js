@@ -38,6 +38,18 @@ async function getAllOrderByIdDao(customer_id) {
         customer_id: customer_id,
         status: null,
       },
+      include: [
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+        {
+          model: db.Customer,
+          as: "customer",
+          attributes: ["fullname"],
+        },
+      ],
       raw: true,
       attributes: { exclude: ["createdAt", "updatedAt"] },
     });
@@ -54,6 +66,18 @@ async function getAllOrderByIdDaoTrue(customer_id) {
         customer_id: customer_id,
         status: 1,
       },
+      include: [
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+        {
+          model: db.Customer,
+          as: "customer",
+          attributes: ["fullname"],
+        },
+      ],
       raw: true,
       attributes: { exclude: ["createdAt", "updatedAt"] },
     });
@@ -70,6 +94,18 @@ async function getAllOrderByIdDaoFalse(customer_id) {
         customer_id: customer_id,
         status: 0,
       },
+      include: [
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+        {
+          model: db.Customer,
+          as: "customer",
+          attributes: ["fullname"],
+        },
+      ],
       raw: true,
       attributes: { exclude: ["createdAt", "updatedAt"] },
     });

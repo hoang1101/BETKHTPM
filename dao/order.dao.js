@@ -43,9 +43,18 @@ async function createOrderDao(data, address) {
 async function AllOrderDao() {
   try {
     const order = await db.Orders.findAll({
-      // where: {
-      //   status: null,
-      // },
+      include: [
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+        {
+          model: db.Customer,
+          as: "customer",
+          attributes: ["fullname"],
+        },
+      ],
       attributes: { exclude: ["createdAt", "updatedAt"] },
     });
 
@@ -118,7 +127,15 @@ async function getOrderById(id) {
   try {
     const order = await db.Order_Item.findAll({
       where: { order_id: id },
-      include: [{ model: db.Product, as: "product" }],
+      include: [
+        {
+          model: db.Product,
+          as: "product",
+          attributes: ["id", "name", "image", "price", "descript"],
+        },
+      ],
+
+      exclude: ["createdAt", "updatedAt"],
     });
 
     return order;

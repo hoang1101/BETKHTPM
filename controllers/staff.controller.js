@@ -12,7 +12,7 @@ const {
   getProductdao,
 } = require("../dao/product.dao");
 const { createRecipe } = require("../dao/recipre.dao");
-const { SS, TT, ReS, ReF, ReE } = require("../utils/util.service");
+const { SS, TT, ReS, ReF, ReE, ReT } = require("../utils/util.service");
 const db = require("../models");
 const {
   findOneStaff,
@@ -30,24 +30,28 @@ exports.createProduct = async (req, res) => {
   try {
     const { name, price, image, descript } = req.body;
     const recipre = req.body.recipre;
-    const product = await createProductdao(
-      name,
-      price,
-      image,
-      descript,
-      recipre
-    );
-    // const recipe = await createRecipe(recipre);
-    if (product) {
-      return res.status(200).json({
-        success: true,
-        response: product,
-      });
+    const kt = await db.Product.findOne({
+      where: { name: name },
+    });
+    if (kt) {
+      return ReF(res, 400, "Da ton tai ten san pham");
     } else {
-      return res.status(400).json({
-        success: false,
-        msg: "Loi khong tao thanh cong!",
-      });
+      const product = await createProductdao(
+        name,
+        price,
+        image,
+        descript,
+        recipre
+      );
+      // const recipe = await createRecipe(recipre);
+      if (product) {
+        return ReS(res, 200, "Cap nhat thanh cong");
+      } else {
+        return res.status(400).json({
+          success: false,
+          msg: "Loi khong tao thanh cong!",
+        });
+      }
     }
   } catch (error) {
     return res.status(500).json({
@@ -60,20 +64,25 @@ exports.createProduct = async (req, res) => {
 
 exports.editProduct = async (req, res) => {
   try {
-    const id = req.params;
+    const { id } = req.params;
     const { name, price, image, descript } = req.body;
-    const product = await editProductdao(id, name, price, image, descript);
-    if (product) {
-      return res.status(200).json({
-        success: true,
-        response: product,
-      });
+    const kt = await db.Product.findOne({
+      where: { name: name },
+    });
+    if (kt) {
+      return ReF(res, 400, "Da ton tai ten san pham");
     } else {
-      return res.status(400).json({
-        success: false,
-        msg: "Loi khong tao thanh cong!",
-      });
+      const product = await editProductdao(id, name, price, image, descript);
+      if (product) {
+        return ReS(res, 200, "Cap nhat thanh cong");
+      } else {
+        return res.status(400).json({
+          success: false,
+          msg: "Loi khong tao thanh cong!",
+        });
+      }
     }
+    // console.log(id, name, price, image, descript, recipre);
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -86,14 +95,21 @@ exports.editProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
+    const kt = await db.Order_Item.findOne({
+      where: { product_id: id },
+    });
     let product = await getProductdao(id);
     if (!product) {
-      return ReE(res, 400, "Khong ton tai");
+      return ReF(res, 400, "Khong ton tai");
     } else {
-      const data = await deleteProductdao(id);
-      return res.status(200).json({
-        success: true,
-      });
+      if (kt) {
+        return ReF(res, 400, "San pham nay da duoc mua");
+      } else {
+        const data = await deleteProductdao(id);
+        return res.status(200).json({
+          success: true,
+        });
+      }
     }
   } catch (error) {
     return res.status(500).json({
@@ -406,4 +422,23 @@ exports.ViewProfile = async (req, res) => {
   }
 };
 
-///
+///cong thuc
+
+exports.GetAllRecipe = async (req, res) => {
+  try {
+    const { product_id } = req.params;
+    const data = await db.Recipe.findAll({
+      // group: ["product_id"],
+      where: { product_id },
+    });
+    return ReT(res, data, 200);
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
+exports.EditRecipe = async (req, res) => {
+  try {
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
