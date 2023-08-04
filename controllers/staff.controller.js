@@ -21,6 +21,7 @@ const {
 } = require("../dao/staff.dao");
 const { Op } = require("sequelize");
 const { CheckPhone, CheckEmail } = require("./until.controller");
+const { searchOrderDao } = require("../dao/customer.dao");
 
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
@@ -165,6 +166,37 @@ exports.detailOrderByid = async (req, res) => {
   }
 };
 // danh sach don hang
+
+// tim kiem don hang theo so dien thoai
+exports.FindOrder = async (req, res) => {
+  try {
+    // const page = req.query?.page * 1;
+    // const limit = req.query?.limit * 1;
+    const search = req.query?.search;
+    let condition = {};
+    let response = {};
+    // if (page || limit || search) {
+    //   if (!page || !limit) return ReF(res, 400, "Missing Data Field");
+    if (search) {
+      condition = {
+        ...condition,
+        ...{
+          phone: { [Op.like]: `%${search}%` },
+        },
+      };
+    }
+    const { rows, count } = await searchOrderDao(condition);
+    response.count = count;
+    response.order = rows;
+    // }
+    return res.status(200).json({
+      success: true,
+      data: response,
+    });
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
 
 /// quản lý nhân viên
 // khóa tài khoản
@@ -373,3 +405,5 @@ exports.ViewProfile = async (req, res) => {
     return ReE(res, error);
   }
 };
+
+///

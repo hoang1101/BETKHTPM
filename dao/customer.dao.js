@@ -139,6 +139,32 @@ async function searchCustomerDao(condition, page, limit) {
   }
 }
 
+async function searchOrderDao(condition, page, limit) {
+  try {
+    console.log(condition);
+    const { rows, count } = await db.Orders.findAndCountAll({
+      include: [
+        {
+          model: db.Customer,
+          as: "customer",
+          where: condition,
+        },
+      ],
+      attributes: {
+        exclude: ["createdAt", "updatedAt"],
+      },
+      // offset: page * limit,
+      // limit: limit,
+    });
+
+    return { rows, count };
+  } catch (error) {
+    throw new Error(
+      `Error: ${error}, traceback at searchOrderDao function at customer.dao.js file`
+    );
+  }
+}
+
 module.exports = {
   findOneUser,
   findOneUserEmail,
@@ -147,4 +173,5 @@ module.exports = {
   getAllOrderByIdDaoTrue,
   editProfileDao,
   searchCustomerDao,
+  searchOrderDao,
 };

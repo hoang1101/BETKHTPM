@@ -95,7 +95,7 @@ module.exports.TT = function (res, data, statuscode = 200) {
 
 module.exports.ReT = function (res, data, statuscode = 200) {
   // Success Web Response
-  let send_data = { success: true };
+  let send_data = {};
 
   if (typeof data == "object") {
     send_data = Object.assign(data, send_data); //merge the objects

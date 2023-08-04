@@ -5,7 +5,18 @@ const {
   UnLockCustomer,
   FindAcountCustomer,
 } = require("../controllers/admin.controller");
-const { ImportIngredient } = require("../controllers/ingredient.controller");
+const {
+  ImportIngredient,
+  CreateMeasure,
+  EditMeasure,
+  DeleteMeasure,
+  getAllMeasure,
+  ImportIngredientOrder,
+  CreateIngredient,
+  EditIngredient,
+  DeleteIngredient,
+  GetAllIngredient,
+} = require("../controllers/ingredient.controller");
 const {
   CreatePromotion,
   editPromotion,
@@ -27,6 +38,7 @@ const {
   ViewProfile,
   EditAcount,
   changePasswordStaff,
+  FindOrder,
 } = require("../controllers/staff.controller");
 const {
   getAllIngredient,
@@ -47,16 +59,14 @@ router.put("/chang-pw-staff/:user_id", changePasswordStaff);
 router.post("/create", createProduct);
 router.put("/edit/:id", editProduct);
 router.delete("/delete/:id", deleteProduct);
-// all order
+// quan ly kinh doanh
 
 router.get("/all-order", AllOrder);
 router.put("/accept-order/:id", AcceptOrder);
 router.put("/cancle-order/:id", CancleOrder);
 router.get("/orderById/:id", detailOrderByid);
-// ingredient
 
-router.post("/create-ingre", ImportIngredient);
-router.get("/all-ingre", getAllIngredient);
+router.get("/search-order", FindOrder);
 
 //thong ke
 router.get("/statistical", statisticalProduct);
@@ -89,5 +99,20 @@ router.get("/find-acount-customer", FindAcountCustomer);
 router.post("/create-promotion", CreatePromotion);
 router.put("/edit-promotion", editPromotion);
 router.delete("/delete-promotion/:id", deletePromotion);
+
+// quan ly vat tu don vi
+router.post("/create-measure", CreateMeasure);
+router.put("/edit-measure/:id", EditMeasure);
+router.delete("/delete-measure/:id", DeleteMeasure);
+router.get("/all-measure", getAllMeasure);
+
+// quan ly vat tu
+router.post("/create-ingredient", CreateIngredient);
+router.put("/edit-ingredient", EditIngredient);
+router.delete("/delete-ingredient/:id", DeleteIngredient);
+router.get("/all-ingredient", GetAllIngredient);
+
+// hoa don nhap
+router.post("/import-ingredient", ImportIngredientOrder);
 
 module.exports = router;
