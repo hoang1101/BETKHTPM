@@ -63,30 +63,49 @@ exports.EditDanhGiaSanPham = async (req, res) => {
 
     if (!start || !comment) return ReS(res, 400, "Ban thieu Field!");
     else {
-      const data = await cloudinary.v2.uploader.upload(
-        img,
-        {
-          folder: "danhgia",
-          width: 320,
-          height: 320,
-          crop: "scale",
-        },
-        function (error, result) {}
-      );
-      const evaluate = await db.Evaluate.update(
-        {
-          start,
-          img: data.url,
-          comment,
-        },
-        {
-          where: { id: id },
+      if (img) {
+        let data;
+        data = await cloudinary.v2.uploader.upload(
+          img,
+          {
+            folder: "danhgia",
+            width: 320,
+            height: 320,
+            crop: "scale",
+          },
+          function (error, result) {}
+        );
+        const evaluate = await db.Evaluate.update(
+          {
+            start,
+            img: data.url,
+            comment,
+          },
+          {
+            where: { id: id },
+          }
+        );
+        if (evaluate) {
+          return ReS(res, 200, "Tao thanh cong!");
+        } else {
+          return ReF(res, 400, "Tao khong thanh cong!");
         }
-      );
-      if (evaluate) {
-        return ReS(res, 200, "Tao thanh cong!");
       } else {
-        return ReF(res, 400, "Tao khong thanh cong!");
+        const evaluate = await db.Evaluate.update(
+          {
+            start,
+            // img: data.url,
+            comment,
+          },
+          {
+            where: { id: id },
+          }
+        );
+        if (evaluate) {
+          return ReS(res, 200, "Tao thanh cong!");
+        } else {
+          return ReF(res, 400, "Tao khong thanh cong!");
+        }
       }
     }
   } catch (error) {
@@ -99,6 +118,18 @@ exports.getEvaluateProduct = async (req, res) => {
   try {
     const { id_product } = req.params;
     const evaluate = await db.Evaluate.findAll({
+      include: [
+        {
+          model: db.Product,
+          as: "product",
+          attribute: ["name"],
+        },
+        {
+          model: db.Customer,
+          as: "customer",
+          attribute: ["fullname", "phone", "address"],
+        },
+      ],
       where: {
         product_id: id_product,
       },

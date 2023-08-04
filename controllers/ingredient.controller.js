@@ -5,6 +5,7 @@ const {
   UpdateImportIngredientDao,
 } = require("../dao/ingredient_order.dao");
 const { ReE, ReF, ReS, ReT } = require("../utils/util.service");
+const { Op } = require("sequelize");
 
 exports.ImportIngredient = async (req, res) => {
   try {
@@ -267,7 +268,36 @@ exports.GetAllIngredient = async (req, res) => {
 };
 
 // quan ly hoa don vat tu
+exports.GetAllIngredientOrderItem = async (req, res) => {
+  try {
+    const data = await db.IngredientOrderItem.findAll({
+      include: [
+        {
+          model: db.Ingredient,
+          as: "ingredient",
+          attributes: ["name"],
+          include: [{ model: db.Measure, as: "measure", attributes: ["name"] }],
+        },
 
+        {
+          model: db.Ingredient_Order,
+          as: "ingredient_order",
+          include: [
+            {
+              model: db.Staff,
+              as: "staff",
+              attributes: ["fullname"],
+            },
+          ],
+          attributes: ["id"],
+        },
+      ],
+    });
+    return ReT(res, data, 200);
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
 // quan ly
 exports.CreateMeasure = async (req, res) => {
   try {
