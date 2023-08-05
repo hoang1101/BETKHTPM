@@ -55,6 +55,7 @@ async function AllOrderDao() {
           attributes: ["fullname"],
         },
       ],
+      raw: true,
       attributes: { exclude: ["createdAt", "updatedAt"] },
     });
 

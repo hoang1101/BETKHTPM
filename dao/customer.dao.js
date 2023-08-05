@@ -163,6 +163,7 @@ async function searchCustomerDao(condition, page, limit) {
       attributes: {
         exclude: ["createdAt", "updatedAt"],
       },
+      raw: true,
       offset: page * limit,
       limit: limit,
     });
@@ -186,6 +187,7 @@ async function searchOrderDao(condition, page, limit) {
           where: condition,
         },
       ],
+      raw: true,
       attributes: {
         exclude: ["createdAt", "updatedAt"],
       },

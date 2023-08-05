@@ -430,6 +430,7 @@ exports.GetAllRecipe = async (req, res) => {
     const data = await db.Recipe.findAll({
       // group: ["product_id"],
       where: { product_id },
+      raw: true,
     });
     return ReT(res, data, 200);
   } catch (error) {

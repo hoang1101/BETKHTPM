@@ -179,6 +179,7 @@ exports.GetAllIngredient = async (req, res) => {
           as: "measure",
         },
       ],
+      raw: true,
     });
     return ReT(res, data, 200);
   } catch (error) {
@@ -213,6 +214,7 @@ exports.GetAllIngredientOrderItemById = async (req, res) => {
           attributes: ["id"],
         },
       ],
+      raw: true,
     });
     return ReT(res, data, 200);
   } catch (error) {
@@ -231,6 +233,7 @@ exports.GetAllIngredientOrder = async (req, res) => {
           attributes: ["fullname"],
         },
       ],
+      raw: true,
     });
     return ReT(res, data, 200);
   } catch (error) {

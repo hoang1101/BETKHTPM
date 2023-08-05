@@ -35,6 +35,7 @@ async function searchStaffDao(condition, page, limit) {
       attributes: {
         exclude: ["createdAt", "updatedAt"],
       },
+      raw: true,
       offset: page * limit,
       limit: limit,
     });
