@@ -207,7 +207,8 @@ exports.FindOrder = async (req, res) => {
     // }
     return res.status(200).json({
       success: true,
-      data: response,
+      count: response.count,
+      data: [...response.order],
     });
   } catch (error) {
     return ReE(res, error);
@@ -367,7 +368,8 @@ exports.FindAcountStaff = async (req, res) => {
     }
     return res.status(200).json({
       success: true,
-      data: response,
+      count: response.count,
+      data: [...response.staff],
     });
   } catch (error) {
     return ReE(res, error);
@@ -430,6 +432,13 @@ exports.GetAllRecipe = async (req, res) => {
     const data = await db.Recipe.findAll({
       // group: ["product_id"],
       where: { product_id: product_id },
+      include: [
+        {
+          model: db.Ingredient,
+          as: "ingredient",
+          attributes: ["name"],
+        },
+      ],
       raw: true,
     });
     return ReT(res, data, 200);

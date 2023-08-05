@@ -27,16 +27,15 @@ async function getRecipreByIdDao(product_id) {
 
 async function UpdateRecipeDao(product_id, recipre) {
   try {
+    const data = await db.Recipe.destroy({
+      where: { product_id: product_id },
+    });
     for (let i of recipre) {
-      const data = await db.Recipe.update(
-        {
-          ingredient_id: i.ingredient_id,
-          quantity: i.quantity,
-        },
-        {
-          where: { product_id: product_id },
-        }
-      );
+      const data = await db.Recipe.create({
+        product_id: product_id,
+        ingredient_id: i.ingredient_id,
+        quantity: i.quantity,
+      });
     }
   } catch (error) {
     throw new Error(`${error}, traceback UpdateRecipeDao()`);

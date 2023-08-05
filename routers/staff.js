@@ -24,6 +24,9 @@ const {
   CreatePromotion,
   editPromotion,
   deletePromotion,
+  GetAllPromotion,
+  GetAllPromotionNow,
+  GetAllPromotionEnd,
 } = require("../controllers/promotion.controller");
 const { getAllRole, getRoleById } = require("../controllers/role.controller");
 const {
@@ -103,6 +106,8 @@ router.get("/find-acount-customer", FindAcountCustomer);
 router.post("/create-promotion", CreatePromotion);
 router.put("/edit-promotion", editPromotion);
 router.delete("/delete-promotion/:id", deletePromotion);
+router.get("/all-promotion", GetAllPromotionNow);
+router.get("/all-promotion-end", GetAllPromotionEnd);
 
 // quan ly vat tu don vi
 router.post("/create-measure", CreateMeasure);

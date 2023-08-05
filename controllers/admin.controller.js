@@ -110,7 +110,8 @@ exports.FindAcountCustomer = async (req, res) => {
     }
     return res.status(200).json({
       success: true,
-      data: response,
+      count: response.count,
+      data: [...response.customer],
     });
   } catch (error) {
     return ReE(res, error);

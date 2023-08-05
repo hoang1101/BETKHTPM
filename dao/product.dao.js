@@ -3,7 +3,16 @@ const cloudinary = require("cloudinary");
 
 async function getAllProductdao() {
   try {
-    const response = await db.Product.findAll({});
+    const response = await db.Product.findAll({
+      include: [
+        {
+          model: db.Promotion,
+          as: "promotion",
+          attributes: ["percent"],
+        },
+      ],
+      raw: true,
+    });
 
     return response;
   } catch (error) {
@@ -100,6 +109,9 @@ async function deleteProductdao(id) {
   try {
     let product = await db.Product.destroy({
       where: { id },
+    });
+    const data = await db.Recipe.destroy({
+      where: { product_id: id },
     });
     return true;
   } catch (error) {
