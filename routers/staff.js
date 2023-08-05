@@ -17,6 +17,8 @@ const {
   DeleteIngredient,
   GetAllIngredient,
   GetAllIngredientOrderItem,
+  GetAllIngredientOrderItemById,
+  GetAllIngredientOrder,
 } = require("../controllers/ingredient.controller");
 const {
   CreatePromotion,
@@ -116,9 +118,10 @@ router.get("/all-ingredient", GetAllIngredient);
 
 // hoa don nhap
 router.post("/import-ingredient", ImportIngredientOrder);
-router.get("/all-i_order_i", GetAllIngredientOrderItem);
+router.get("/all-i_order_i/:id", GetAllIngredientOrderItemById);
+router.get("/all-order_item", GetAllIngredientOrder);
 
 //cong thuc
-router.get("/all-recipe/:product_id", GetAllRecipe);
+router.get("/get-recipe/:product_id", GetAllRecipe);
 
 module.exports = router;

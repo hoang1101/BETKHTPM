@@ -69,6 +69,7 @@ module.exports.ReS = function (res, stt, text) {
 module.exports.ReF = function (res, stt, text) {
   // Success Web Response
   // console.log(text);
+  // res.satus = 400;
   return res.json({ success: false, code: stt, msg: text });
 };
 module.exports.SS = function (res, data, satus = 200) {

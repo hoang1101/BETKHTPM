@@ -74,6 +74,7 @@ async function editProductdao(id, name, price, image, descript, recipre) {
           where: { id: id },
         }
       );
+
       return product;
     } else {
       let product = await db.Product.update(

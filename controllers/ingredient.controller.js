@@ -44,15 +44,15 @@ exports.ImportIngredientOrder = async (req, res) => {
     if (staff_id || data) {
       const i_order = await db.Ingredient_Order.create({
         staff_id: staff_id,
-        // date: new Date(
-        //   moment(
-        //     new Date(
-        //       new Date().getFullYear(),
-        //       new Date().getMonth(),
-        //       new Date().getDate()
-        //     )
-        //   ).format("YYYY-MM-DD")
-        // ),
+        date: new Date(
+          moment(
+            new Date(
+              new Date().getFullYear(),
+              new Date().getMonth(),
+              new Date().getDate()
+            )
+          ).format("YYYY-MM-DD")
+        ),
       });
       let check;
       for (let i of data) {
@@ -187,9 +187,11 @@ exports.GetAllIngredient = async (req, res) => {
 };
 
 // quan ly hoa don vat tu
-exports.GetAllIngredientOrderItem = async (req, res) => {
+exports.GetAllIngredientOrderItemById = async (req, res) => {
   try {
+    const { id } = req.params;
     const data = await db.IngredientOrderItem.findAll({
+      where: { ingredient_order_id: id },
       include: [
         {
           model: db.Ingredient,
@@ -217,6 +219,25 @@ exports.GetAllIngredientOrderItem = async (req, res) => {
     return ReE(res, error);
   }
 };
+
+// danh sach hoa hon vat tu staff
+exports.GetAllIngredientOrder = async (req, res) => {
+  try {
+    const data = await db.Ingredient_Order.findAll({
+      include: [
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+      ],
+    });
+    return ReT(res, data, 200);
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
+
 // quan ly
 exports.CreateMeasure = async (req, res) => {
   try {

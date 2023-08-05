@@ -33,7 +33,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
       },
       birthday: {
-        type: DataTypes.DATE,
+        type: DataTypes.DATEONLY,
       },
       roleId: {
         type: DataTypes.INTEGER,

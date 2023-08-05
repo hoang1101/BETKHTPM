@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
       staff_id: {
         type: DataTypes.INTEGER,
       },
-      // date: {
-      //   type: DataTypes.DATEONLY,
-      // },
+      date: {
+        type: DataTypes.DATEONLY,
+      },
     },
     {
       timestamps: false,
