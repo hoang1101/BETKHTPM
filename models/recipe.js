@@ -5,9 +5,11 @@ module.exports = (sequelize, DataTypes) => {
     {
       product_id: {
         type: DataTypes.INTEGER,
+        primaryKey: true,
       },
       ingredient_id: {
         type: DataTypes.INTEGER,
+        primaryKey: true,
       },
       quantity: {
         type: DataTypes.FLOAT,

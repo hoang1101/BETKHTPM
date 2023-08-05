@@ -429,7 +429,7 @@ exports.GetAllRecipe = async (req, res) => {
     const { product_id } = req.params;
     const data = await db.Recipe.findAll({
       // group: ["product_id"],
-      where: { product_id },
+      where: { product_id: product_id },
       raw: true,
     });
     return ReT(res, data, 200);
