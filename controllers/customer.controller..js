@@ -16,6 +16,8 @@ const checkOut = async (req, res) => {
     address = req.body.address;
     action = await orderDao.createOrderDao(data, address);
 
+    if (action) {
+    }
     res.status(200).json({
       success: true,
       msg: "hihi",
@@ -141,11 +143,52 @@ const ViewProfileCustomer = async (req, res) => {
 const checkIngredient = async (req, res) => {
   try {
     data = req.body.data;
+
+    // lay ra danh sach cac nguyen lieu trong cua hang
+    const ingredient = await db.Ingredient.findAll({});
+    let KQ = {};
+    for (let i of data) {
+      const recipe = await db.Recipe.findAll({
+        where: { product_id: i.id },
+      });
+      for (let j of recipe) {
+        if (KQ[j.ingredient_id]) {
+          KQ[j.ingredient_id] += j.quantity * i.quantity;
+        } else {
+          KQ[j.ingredient_id] = j.quantity * i.quantity;
+        }
+      }
+    }
+    let j = 0;
+    console.log(KQ);
+    for (let i of ingredient) {
+      if (KQ[i.id]) {
+        console.log(i.quantity, KQ[i.id]);
+        if (i.quantity - KQ[i.id] < 0) {
+          return ReF(res, 400, "Đã hết nguyên liệu! ");
+        }
+      }
+    }
+    return ReS(res, 200, "Thêm sản phẩm thành công");
   } catch (error) {
     return ReE(res, error);
   }
 };
 
+const CustomerCancleOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const order = await orderDao.CustomerCancleOrderDao(id);
+    return SS(res, order, 200);
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: -1,
+      msg: "Fail at auth controller: " + error,
+    });
+  }
+};
 module.exports = {
   checkOut,
   getAllOrderById,
@@ -155,4 +198,5 @@ module.exports = {
   changePassword,
   ViewProfileCustomer,
   checkIngredient,
+  CustomerCancleOrder,
 };

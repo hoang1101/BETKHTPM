@@ -8,6 +8,8 @@ const {
   editProfile,
   changePassword,
   ViewProfileCustomer,
+  checkIngredient,
+  CustomerCancleOrder,
 } = require("../controllers/customer.controller.");
 const {
   getEvaluateCustomer,
@@ -33,4 +35,10 @@ router.get("/allOrderItemDone/:customer_id", getEvaluateCustomerDone);
 
 // xem thong tin ca nhan
 router.get("/view-myif/:id", ViewProfileCustomer);
+
+// check order-ingredient
+router.post("/check-order", checkIngredient);
+
+// customer huy don
+router.put("/cancle-order/:id", CustomerCancleOrder);
 module.exports = router;

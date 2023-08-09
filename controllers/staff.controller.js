@@ -12,8 +12,9 @@ const {
   getProductdao,
 } = require("../dao/product.dao");
 const { createRecipe } = require("../dao/recipre.dao");
-const { SS, TT, ReS, ReF, ReE, ReT } = require("../utils/util.service");
+const { SS, TT, ReS, ReF, ReE, ReT, to } = require("../utils/util.service");
 const db = require("../models");
+const semail = require("../utils/mailer");
 const {
   findOneStaff,
   findOneStaffEmail,
@@ -22,6 +23,11 @@ const {
 const { Op } = require("sequelize");
 const { CheckPhone, CheckEmail } = require("./until.controller");
 const { searchOrderDao } = require("../dao/customer.dao");
+const {
+  ContentActiveAccount_vi,
+  ContentOrderTrue,
+  ContentOrderFalse,
+} = require("../template/email");
 
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
@@ -143,6 +149,25 @@ exports.AcceptOrder = async (req, res) => {
     const { staff_id } = req.body;
 
     const order = await AcceptOrderDao(id, staff_id);
+
+    if (order) {
+      const kt = await db.Orders.findOne({
+        where: { id: id },
+      });
+      const cus = await db.Customer.findOne({
+        where: {
+          id: kt.customer_id,
+        },
+      });
+      to(
+        semail.sendMail({
+          to: cus.email,
+          subject: "Thông báo mua hàng",
+          body: ContentOrderTrue(cus.fullname, id),
+        })
+      );
+    }
+
     return ReS(res, order, 200);
   } catch (error) {
     return res.status(500).json({
@@ -158,6 +183,23 @@ exports.CancleOrder = async (req, res) => {
     const { staff_id } = req.body;
 
     const order = await CancleOrderDao(id, staff_id);
+    if (order) {
+      const kt = await db.Orders.findOne({
+        where: { id: id },
+      });
+      const cus = await db.Customer.findOne({
+        where: {
+          id: kt.customer_id,
+        },
+      });
+      to(
+        semail.sendMail({
+          to: cus.email,
+          subject: "Thông báo mua hàng",
+          body: ContentOrderFalse(cus.fullname, id),
+        })
+      );
+    }
     return SS(res, order, 200);
   } catch (error) {
     return res.status(500).json({

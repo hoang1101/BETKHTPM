@@ -23,3 +23,29 @@ exports.ContentActiveAccountOTP = (fullname, token) => {
     "Trân Trọng,<br>Phúc Long."
   );
 };
+// huy nhan don hang
+exports.ContentOrderFalse = (fullname, id) => {
+  return (
+    "<p>Xin chào " +
+    fullname +
+    "</p>" +
+    "<p>Đơn hàng với mã số " +
+    id +
+    ", đã bị hủy vì số lượng nguyên liệu bên cửa hàng không còn đủ để hoàn thành.</p>" +
+    "<p>Xin lỗi bạn vì vẫn đề gặp phải và mong bạn đến với hệ thống của hàng trực tuyến của Phúc Long để đặt đơn hàng mới.</p>" +
+    "Trân Trọng,<br>Phúc Long."
+  );
+};
+//  nhan don hang
+exports.ContentOrderTrue = (fullname, id) => {
+  return (
+    "<p>Xin chào " +
+    fullname +
+    "</p>" +
+    "<p>Đơn hàng với mã số " +
+    id +
+    ", đã hoàn thành.</p>" +
+    "<p>Xin cảm ơn bạn đã mua hàng và mong bạn đến với hệ thống của hàng trực tuyến của Phúc Long để đặt đơn hàng mới.</p>" +
+    "Trân Trọng,<br>Phúc Long."
+  );
+};
