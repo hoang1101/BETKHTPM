@@ -2,7 +2,7 @@ const { findOneStaff } = require("../dao/staff.dao");
 const db = require("../models");
 const { ReT, ReE } = require("../utils/util.service");
 
-async function CheckPhone(phone) {
+async function CheckPhone(id, phone) {
   try {
     const response = await db.Customer.findOne({
       where: {
@@ -15,6 +15,9 @@ async function CheckPhone(phone) {
       },
     });
     if (response1 && response) {
+      if (response1.id === id || response.id === id) {
+        return false;
+      }
       return true;
     } else {
       return false;
@@ -23,7 +26,7 @@ async function CheckPhone(phone) {
     return ReE(res, error);
   }
 }
-async function CheckEmail(email) {
+async function CheckEmail(id, email) {
   try {
     const response = await db.Customer.findOne({
       where: {
@@ -36,6 +39,9 @@ async function CheckEmail(email) {
       },
     });
     if (response1 && response) {
+      if (response1.id === id || response.id === id) {
+        return false;
+      }
       return true;
     } else {
       return false;

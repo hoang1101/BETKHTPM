@@ -12,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
       },
       date: {
-        type: DataTypes.DATEONLY,
+        type: DataTypes.DATE,
       },
     },
     {

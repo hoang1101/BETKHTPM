@@ -22,12 +22,9 @@ module.exports = (sequelize, DataTypes) => {
       quantity: {
         type: DataTypes.INTEGER,
       },
-      date: {
-        type: DataTypes.DATEONLY,
-      },
     },
     {
-      timestamps: true,
+      timestamps: false,
       freezeTableName: "order_item",
     }
   );

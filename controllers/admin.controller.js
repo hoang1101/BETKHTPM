@@ -2,13 +2,14 @@ const { Op } = require("sequelize");
 const { searchCustomerDao } = require("../dao/customer.dao");
 const db = require("../models");
 const { ReE, ReS } = require("../utils/util.service");
+const { CheckPhone, CheckEmail } = require("./until.controller");
 
 exports.editProfileByAdmin = async (req, res) => {
   try {
     const { id, fullname, email, phone, address, gender, birthday, roleId } =
       req.body;
-    const ktphone = await CheckPhone(phone);
-    const ktemail = await CheckEmail(email);
+    const ktphone = await CheckPhone(id, phone);
+    const ktemail = await CheckEmail(id, email);
     if (ktphone) {
       return ReF(res, 400, "So dien thoai bi trung !");
     } else if (ktemail) {
