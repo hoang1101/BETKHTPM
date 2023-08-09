@@ -7,7 +7,15 @@ const { findOneStaff } = require("../dao/staff.dao");
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 
-exports.registerService = ({ phone, password, fullname, email, address }) =>
+exports.registerService = ({
+  password,
+  fullname,
+  email,
+  phone,
+  address,
+  gender,
+  birthday,
+}) =>
   new Promise(async (resolve, reject) => {
     try {
       // const column = await db.TaiKhoan.describe();
@@ -25,6 +33,9 @@ exports.registerService = ({ phone, password, fullname, email, address }) =>
           email,
           phone,
           address,
+          gender,
+          birthday,
+          issAcctive: false,
         },
       });
 
@@ -55,12 +66,14 @@ exports.registerService = ({ phone, password, fullname, email, address }) =>
 
 //stafff
 exports.registerServiceStaff = ({
-  phone,
   password,
   fullname,
   email,
-  address,
+  phone,
   roleId,
+  address,
+  gender,
+  birthday,
 }) =>
   new Promise(async (resolve, reject) => {
     try {
@@ -80,6 +93,9 @@ exports.registerServiceStaff = ({
           phone,
           address,
           roleId,
+          gender,
+          birthday,
+          issAcctive: false,
         },
       });
 

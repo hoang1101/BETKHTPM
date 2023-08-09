@@ -69,7 +69,7 @@ exports.editProduct = async (req, res) => {
     const kt = await db.Product.findOne({
       where: { name: name },
     });
-    if (kt) {
+    if (kt && kt.id != id) {
       return ReF(res, 400, "Da ton tai ten san pham");
     } else {
       const product = await editProductdao(id, name, price, image, descript);
@@ -220,24 +220,24 @@ exports.FindOrder = async (req, res) => {
 exports.LockAccount = async (req, res) => {
   try {
     const { id } = req.body;
-    const ktstaff = await db.Orders.findOne({
-      where: { staff_id: id },
-    });
-    if (ktstaff) {
-      return ReF(res, 400, "Tai khoan nay da duyet don hang !");
+    // const ktstaff = await db.Orders.findOne({
+    //   where: { staff_id: id },
+    // });
+    // if (ktstaff) {
+    //   return ReF(res, 400, "Tai khoan nay da duyet don hang !");
+    // } else {
+    const staff = await db.Staff.update(
+      {
+        isAcctive: 1,
+      },
+      { where: { id: id } }
+    );
+    if (staff) {
+      return ReS(res, 200, "Successfull !");
     } else {
-      const staff = await db.Staff.update(
-        {
-          isAcctive: 1,
-        },
-        { where: { id: id } }
-      );
-      if (staff) {
-        return ReS(res, 200, "Successfull !");
-      } else {
-        return ReF(res, 400, "Fail!");
-      }
+      return ReF(res, 400, "Fail!");
     }
+    // }
   } catch (error) {
     return ReE(res, error);
   }
@@ -271,8 +271,8 @@ exports.EditAcount = async (req, res) => {
     const { id } = req.params;
     const { fullname, email, phone, address, gender, birthday, roleId } =
       req.body;
-    const ktphone = await CheckPhone(phone);
-    const ktemail = await CheckEmail(email);
+    const ktphone = await CheckPhone(id, phone);
+    const ktemail = await CheckEmail(id, email);
     if (ktphone) {
       return ReF(res, 400, "So dien thoai bi trung !");
     } else if (ktemail) {

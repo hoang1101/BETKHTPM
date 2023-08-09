@@ -6,7 +6,7 @@ const emailExistence = require("email-existence");
 const { findOneUser, findOneUserEmail } = require("../dao/customer.dao");
 const { findOneStaff } = require("../dao/staff.dao");
 const { ReS, ReE, to } = require("../utils/util.service");
-const { sendMail } = require("../utils/mailer");
+const semail = require("../utils/mailer");
 const {
   ContentActiveAccount_vi,
   ContentActiveAccountOTP,
@@ -110,25 +110,36 @@ exports.register = async (req, res) => {
           msg: "Not Found",
         });
       } else {
-        emailExistence.check(email, async (error, resmail) => {
-          if (!resmail) {
-            return ReE(res, "Email không tồn tại", 200, 1000);
-          } else {
-            let [err, da] = await to(
-              sendMail({
-                to: email,
-                subject: "Thông báo hệ thống",
-                body: ContentActiveAccount_vi(fullname),
-              })
-            );
-            if (err) return ReE(res, err, 200, 1000);
-          }
-        });
+        // emailExistence.check(email, async (error, resmail) => {
+        //   if (error) {
+        //     return ReE(res, "Email không tồn tại", 200, 1000);
+        //   }
+        //   if (!resmail) {
+        //     return ReE(res, "Email không tồn tại", 200, 1000);
+        //   } else {
+        //     let [err, da] = await to(
+        //       sendMail({
+        //         to: email,
+        //         subject: "Thông báo hệ thống",
+        //         body: ContentActiveAccount_vi(fullname),
+        //       })
+        //     );
+        //     if (err) return ReE(res, err, 200, 1000);
+        //   }
+        // });
+        to(
+          semail.sendMail({
+            to: email,
+            subject: "Thông báo hệ thống",
+            body: ContentActiveAccount_vi(fullname),
+          })
+        );
       }
 
       return res.status(200).json({
         success: true,
         response,
+        message: "Gửi mail thành công, vui lòng kiểm tra email",
       });
     } else {
       return res.status(400).json({
@@ -148,9 +159,27 @@ exports.register = async (req, res) => {
 // register Staff
 
 exports.registerStaff = async (req, res) => {
-  const { password, fullname, email, phone, roleId, address } = req.body;
+  const {
+    password,
+    fullname,
+    email,
+    phone,
+    roleId,
+    address,
+    gender,
+    birthday,
+  } = req.body;
   try {
-    if (!password || !fullname || !email || !phone || !roleId)
+    if (
+      !password ||
+      !fullname ||
+      !email ||
+      !phone ||
+      !roleId ||
+      !address ||
+      !gender ||
+      !birthday
+    )
       return res.status(400).json({
         success: false,
         error: 1,
@@ -180,7 +209,13 @@ exports.registerStaff = async (req, res) => {
       //     }
       //   });
       // }
-
+      to(
+        semail.sendMail({
+          to: email,
+          subject: "Thông báo hệ thống",
+          body: ContentActiveAccount_vi(fullname),
+        })
+      );
       return res.status(200).json({
         success: true,
         response,
@@ -220,29 +255,35 @@ exports.sendEmailOTP = async (req, res) => {
           msg: "Not Found",
         });
       } else {
-        emailExistence.check(email, async (error, resmail) => {
-          if (!resmail) {
-            return ReE(res, "mail không tồn tại", 200, 1000);
-          } else {
-            let [err, da] = await to(
-              sendMail({
-                to: email,
-                subject: "Kích hoạt tài khoản",
-                body: ContentActiveAccountOTP(user.fullname, token),
-              })
-            );
-            if (err) return ReE(res, err, 200, 1000);
-
-            return ReS(
-              res,
-              {
-                token: secret.base32,
-              },
-              200
-            );
-          }
-        });
+        // emailExistence.check(email, async (error, resmail) => {
+        //   if (!resmail) {
+        //     return ReE(res, "mail không tồn tại", 200, 1000);
+        //   } else {
+        //     let [err, da] = await to(
+        //       sendMail({
+        //         to: email,
+        //         subject: "Kích hoạt tài khoản",
+        //         body: ContentActiveAccountOTP(user.fullname, token),
+        //       })
+        //     );
+        //     if (err) return ReE(res, err, 200, 1000);
+        to(
+          semail.sendMail({
+            to: email,
+            subject: "Kích hoạt tài khoản",
+            body: ContentActiveAccountOTP(user.fullname, token),
+          })
+        );
+        return ReS(
+          res,
+          {
+            token: secret.base32,
+          },
+          200
+        );
       }
+      // });
+      // }
     } else {
       return ReE(res, error);
     }
@@ -304,45 +345,51 @@ exports.ResetPassword = async (req, res) => {
         secret: secret.base32,
         encoding: "base32",
       });
-      emailExistence.check(email, async (error, resmail) => {
-        if (!resmail) {
-          return ReE(res, "mail không tồn tại", 200, 1000);
-        } else {
-          let [err, da] = await to(
-            sendMail({
-              to: email,
-              subject: "Subject Active Account",
-              body: token,
-            })
-          );
-          if (err) return ReE(res, err, 200, 1000);
-
-          try {
-            const updatePassword = await db.User.update(
-              { password: hashPassword(token) },
-              {
-                where: { email: email },
-              }
-            );
-            if (updatePassword) {
-              return ReS(
-                res,
-                {
-                  msg: "mk mới của bạn đã được gửi về mail của bạn",
-                },
-                200
-              );
-            }
-          } catch (error) {
-            return res.status(500).json({
-              success: false,
-              error: -1,
-              msg: "khong thay đổi được mật khâuw" + error,
-            });
+      // emailExistence.check(email, async (error, resmail) => {
+      //   if (!resmail) {
+      //     return ReE(res, "mail không tồn tại", 200, 1000);
+      //   } else {
+      //     let [err, da] = await to(
+      //       sendMail({
+      //         to: email,
+      //         subject: "Subject Active Account",
+      //         body: token,
+      //       })
+      //     );
+      //     if (err) return ReE(res, err, 200, 1000);
+      to(
+        semail.sendMail({
+          to: email,
+          subject: "Subject Active Account",
+          body: token,
+        })
+      );
+      try {
+        const updatePassword = await db.User.update(
+          { password: hashPassword(token) },
+          {
+            where: { email: email },
           }
+        );
+        if (updatePassword) {
+          return ReS(
+            res,
+            {
+              msg: "mk mới của bạn đã được gửi về mail của bạn",
+            },
+            200
+          );
         }
-      });
+      } catch (error) {
+        return res.status(500).json({
+          success: false,
+          error: -1,
+          msg: "khong thay đổi được mật khâuw" + error,
+        });
+      }
     }
+    // });
+    // }
   } catch (err) {
     return res.status(500).json({
       success: false,

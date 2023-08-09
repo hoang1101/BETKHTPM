@@ -124,7 +124,7 @@ exports.EditIngredient = async (req, res) => {
     const kt = await db.Ingredient.findOne({
       where: { name: name },
     });
-    if (kt) {
+    if (kt && kt.id != id) {
       return ReF(res, 400, "Da ton tai ten nguyen lieu nay");
     } else {
       const data = await db.Ingredient.update(
@@ -276,7 +276,7 @@ exports.EditMeasure = async (req, res) => {
         name: name,
       },
     });
-    if (kt) {
+    if (kt && kt.id != id) {
       return ReF(res, 400, "Da ton tai");
     } else {
       const data = await db.Measure.update(

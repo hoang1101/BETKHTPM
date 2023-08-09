@@ -125,8 +125,8 @@ async function editProfileDao({
   birthday,
 }) {
   try {
-    const kt = await CheckPhone(phone);
-    const ktemail = await CheckEmail(email);
+    const kt = await CheckPhone(id, phone);
+    const ktemail = await CheckEmail(id, email);
     if (kt) {
       return ReF(res, 400, "So dien thoai bi trung !");
     } else if (ktemail) {
