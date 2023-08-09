@@ -1,3 +1,4 @@
+const { Op } = require("sequelize");
 const db = require("../models");
 const cloudinary = require("cloudinary");
 
@@ -5,11 +6,37 @@ async function getAllProductdao() {
   try {
     const response = await db.Product.findAll({
       include: [
+        // {
+        //   model: db.Recipe,
+        //   as: "repice",
+        //   include: [
+        //     {
+        //       model: db.Ingredient,
+        //       as: "ingredient",
+        //       where: {
+        //         quantity: { [Op.gt]: 0 },
+        //       },
+        //     },
+        //   ],
+        // },
         {
           model: db.Promotion,
           as: "promotion",
           attributes: ["percent"],
         },
+        // {
+        //   model: db.Recipe,
+        //   as: "repice",
+        //   include: [
+        //     {
+        //       model: db.Ingredient,
+        //       as: "ingredient",
+        //       where: {
+        //         quantity: { [Op.gt]: 0 },
+        //       },
+        //     },
+        //   ],
+        // },
       ],
       raw: true,
     });
@@ -126,6 +153,26 @@ async function searchProductDao(condition, page, limit) {
       attributes: {
         exclude: ["createdAt", "updatedAt"],
       },
+      include: [
+        {
+          model: db.Recipe,
+          as: "repice",
+          include: [
+            {
+              model: db.Ingredient,
+              as: "ingredient",
+              where: {
+                quantity: { [Op.gt]: 0 },
+              },
+            },
+          ],
+        },
+        {
+          model: db.Promotion,
+          as: "promotion",
+          attributes: ["percent"],
+        },
+      ],
       offset: page * limit,
       limit: limit,
     });

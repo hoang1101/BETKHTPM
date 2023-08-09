@@ -137,6 +137,15 @@ const ViewProfileCustomer = async (req, res) => {
     return ReE(res, error);
   }
 };
+
+const checkIngredient = async (req, res) => {
+  try {
+    data = req.body.data;
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
+
 module.exports = {
   checkOut,
   getAllOrderById,
@@ -145,4 +154,5 @@ module.exports = {
   editProfile,
   changePassword,
   ViewProfileCustomer,
+  checkIngredient,
 };

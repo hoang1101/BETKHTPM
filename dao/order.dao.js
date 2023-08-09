@@ -1,6 +1,8 @@
 const db = require("../models");
 const moment = require("moment");
 
+// async function checkIngredient(data)
+
 async function createOrderDao(data, address) {
   try {
     // console.log("dao i " + data[0].idCus);
@@ -15,7 +17,7 @@ async function createOrderDao(data, address) {
             new Date().getMonth(),
             new Date().getDate()
           )
-        ).format("YYYY-MM-DD")
+        ).format("YYYY-MM-DD HH:mm:ss")
       ),
     });
     for (let i of data) {
@@ -24,15 +26,6 @@ async function createOrderDao(data, address) {
         product_id: i.idPro,
         quantity: i.qty,
         price: i.price,
-        date: new Date(
-          moment(
-            new Date(
-              new Date().getFullYear(),
-              new Date().getMonth(),
-              new Date().getDate()
-            )
-          ).format("YYYY-MM-DD")
-        ),
       });
     }
   } catch (err) {
