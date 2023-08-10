@@ -5,39 +5,39 @@ const cloudinary = require("cloudinary");
 async function getAllProductdao() {
   try {
     const response = await db.Product.findAll({
-      include: [
-        // {
-        //   model: db.Recipe,
-        //   as: "repice",
-        //   include: [
-        //     {
-        //       model: db.Ingredient,
-        //       as: "ingredient",
-        //       where: {
-        //         quantity: { [Op.gt]: 0 },
-        //       },
-        //     },
-        //   ],
-        // },
-        {
-          model: db.Promotion,
-          as: "promotion",
-          attributes: ["percent"],
-        },
-        // {
-        //   model: db.Recipe,
-        //   as: "repice",
-        //   include: [
-        //     {
-        //       model: db.Ingredient,
-        //       as: "ingredient",
-        //       where: {
-        //         quantity: { [Op.gt]: 0 },
-        //       },
-        //     },
-        //   ],
-        // },
-      ],
+      // include: [
+      //   // {
+      //   //   model: db.Recipe,
+      //   //   as: "repice",
+      //   //   include: [
+      //   //     {
+      //   //       model: db.Ingredient,
+      //   //       as: "ingredient",
+      //   //       where: {
+      //   //         quantity: { [Op.gt]: 0 },
+      //   //       },
+      //   //     },
+      //   //   ],
+      //   // },
+      //   {
+      //     model: db.Promotion,
+      //     as: "promotion",
+      //     attributes: ["percent"],
+      //   },
+      //   // {
+      //   //   model: db.Recipe,
+      //   //   as: "repice",
+      //   //   include: [
+      //   //     {
+      //   //       model: db.Ingredient,
+      //   //       as: "ingredient",
+      //   //       where: {
+      //   //         quantity: { [Op.gt]: 0 },
+      //   //       },
+      //   //     },
+      //   //   ],
+      //   // },
+      // ],
       raw: true,
     });
 
@@ -153,26 +153,32 @@ async function searchProductDao(condition, page, limit) {
       attributes: {
         exclude: ["createdAt", "updatedAt"],
       },
+      raw: true,
       include: [
-        {
-          model: db.Recipe,
-          as: "repice",
-          include: [
-            {
-              model: db.Ingredient,
-              as: "ingredient",
-              where: {
-                quantity: { [Op.gt]: 0 },
-              },
-            },
-          ],
-        },
         {
           model: db.Promotion,
           as: "promotion",
           attributes: ["percent"],
         },
+
+        // {
+        //   model: db.Recipe,
+        //   as: "repice",
+        //   attributes: [],
+        //   include: [
+        //     {
+        //       model: db.Ingredient,
+        //       as: "ingredient",
+        //       attributes: [],
+        //       // where: {
+        //       //   quantity: { [Op.gt]: 0 },
+        //       // },
+        //     },
+        //   ],
+        // },
       ],
+      // subQuery: false,
+      // raw: true,
       offset: page * limit,
       limit: limit,
     });

@@ -11,23 +11,21 @@ async function statisticalProductDao() {
           as: "orders",
           where: {
             status: 1,
+            date: {
+              [Op.eq]: new Date(
+                moment(
+                  new Date(
+                    new Date().getFullYear(),
+                    new Date().getMonth(),
+                    new Date().getDate()
+                  )
+                ).format("YYYY-MM-DD")
+              ),
+            },
           },
           attributes: [],
         },
       ],
-      where: {
-        date: {
-          [Op.eq]: new Date(
-            moment(
-              new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                new Date().getDate()
-              )
-            ).format("YYYY-MM-DD")
-          ),
-        },
-      },
     });
 
     return data;
@@ -45,15 +43,13 @@ async function statisticalProductDaoDate(date_) {
           as: "orders",
           where: {
             status: 1,
+            date: {
+              [Op.eq]: new Date(moment(new Date(date_)).format("YYYY-MM-DD")),
+            },
           },
           attributes: [],
         },
       ],
-      where: {
-        date: {
-          [Op.eq]: new Date(moment(new Date(date_)).format("YYYY-MM-DD")),
-        },
-      },
     });
     return data;
   } catch (error) {

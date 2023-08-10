@@ -33,7 +33,7 @@ exports.statisticalProduct = async (req, res) => {
       }
       datatk.push({ ...i.dataValues, soluong: kt });
     }
-    return SS(res, datatk);
+    return SS(res, data);
   } catch (error) {
     return ReE(res, error);
   }
@@ -60,7 +60,7 @@ exports.statisticalRevenueProduct = async (req, res) => {
 
     return res.status(200).json({
       success: true,
-      datatk,
+      data,
       tong,
     });
   } catch (error) {
@@ -73,26 +73,10 @@ exports.statisticalRevenueProductDate = async (req, res) => {
   try {
     const { date } = req.body;
     const data = await statisticalProductDaoDate(date);
-
     const product = await getAllProductdao();
-    let tong = 0;
-    let datatk = [];
-    for (const i of product) {
-      let kt = 0;
-      for (const j of data) {
-        if (i.id === j.product_id) {
-          kt = kt + 1;
-        }
-      }
-
-      datatk.push({ ...i.dataValues, soluong: kt, doanhthu: kt * i.price });
-      tong = tong + kt * i.price;
-    }
 
     return res.status(200).json({
       success: true,
-      datatk,
-      tong,
     });
   } catch (error) {
     return ReE(res, error);
