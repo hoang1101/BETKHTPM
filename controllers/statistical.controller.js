@@ -68,17 +68,39 @@ exports.statisticalRevenueProduct = async (req, res) => {
   }
 };
 
-/// thong ke doanh thu theo ngay tuy chon
+/// thong ke doanh thu, loi nhuan theo ngay tuy chon
 exports.statisticalRevenueProductDate = async (req, res) => {
   try {
     const { date } = req.body;
     const data = await statisticalProductDaoDate(date);
     const product = await getAllProductdao();
 
+    let datatk = [];
+
+    for (let i of product) {
+      let sl = 0,
+        dg = 0;
+      for (let j of data) {
+        if (i.id === j.product_id) {
+          sl = sl + j.quantity;
+          dg = j.price * j.quantity;
+        }
+      }
+      datatk.push({
+        ...i,
+        sl: sl,
+        dg: dg,
+      });
+    }
+
     return res.status(200).json({
       success: true,
+      datatk,
     });
   } catch (error) {
     return ReE(res, error);
   }
 };
+// thong ke doang thu theo ngya thang nam
+
+//  thong ke khach hang top

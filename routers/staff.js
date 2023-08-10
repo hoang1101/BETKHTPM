@@ -27,6 +27,7 @@ const {
   GetAllPromotion,
   GetAllPromotionNow,
   GetAllPromotionEnd,
+  GetAllPromotionRegister,
 } = require("../controllers/promotion.controller");
 const { getAllRole, getRoleById } = require("../controllers/role.controller");
 const {
@@ -108,6 +109,7 @@ router.put("/edit-promotion", editPromotion);
 router.delete("/delete-promotion/:id", deletePromotion);
 router.get("/all-promotion", GetAllPromotionNow);
 router.get("/all-promotion-end", GetAllPromotionEnd);
+router.get("/all-promotion-register", GetAllPromotionRegister);
 
 // quan ly vat tu don vi
 router.post("/create-measure", CreateMeasure);

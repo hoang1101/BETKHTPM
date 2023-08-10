@@ -219,3 +219,46 @@ exports.GetAllPromotionEnd = async (req, res) => {
     return ReE(res, error);
   }
 };
+
+exports.GetAllPromotionRegister = async (req, res) => {
+  try {
+    const data1 = await db.Product.findAll({
+      include: [
+        {
+          model: db.Promotion,
+          as: "promotion",
+        },
+      ],
+      where: {
+        "$promotion.product_id$": null,
+      },
+    });
+
+    const data = await db.Product.findAll({
+      include: [
+        {
+          model: db.Promotion,
+          as: "promotion",
+          attributes: [],
+          where: {
+            end_day: {
+              [Op.lt]: new Date(
+                moment(
+                  new Date(
+                    new Date().getFullYear(),
+                    new Date().getMonth(),
+                    new Date().getDate()
+                  )
+                ).format("YYYY-MM-DD")
+              ),
+            },
+          },
+        },
+      ],
+    });
+    let kt = [...data, ...data1];
+    return ReT(res, kt, 200);
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
