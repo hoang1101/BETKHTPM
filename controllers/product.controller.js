@@ -39,6 +39,7 @@ exports.SearchProduct = async (req, res) => {
     const search = req.query?.search;
     let condition = {};
     let response = {};
+    let counts = 0;
     if (page || limit || search) {
       if (!page || !limit) return ReE(res, 400, "Missing Data Field");
       if (search) {
@@ -54,11 +55,12 @@ exports.SearchProduct = async (req, res) => {
         page - 1,
         limit
       );
-      response.count = count;
-      response.product = rows;
+      counts = count;
+      response = rows;
     }
     return res.status(200).json({
       success: true,
+      count: counts,
       data: response,
     });
   } catch (error) {
