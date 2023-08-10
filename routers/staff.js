@@ -55,6 +55,7 @@ const {
   statisticalShipper,
   statisticalShipperRevenue,
   statisticalRevenueProductDate,
+  getCustomerOrder,
 } = require("../controllers/statistical.controller");
 
 const router = require("express").Router();
@@ -81,6 +82,7 @@ router.get("/statistical", statisticalProduct);
 router.get("/statistical-revenue", statisticalRevenueProduct);
 // thong ke doan thu theo ngay tuy chon
 router.post("/statistical-revenue-date", statisticalRevenueProductDate);
+router.get("/customer-top", getCustomerOrder);
 
 // quản lý nhân viên
 
