@@ -14,6 +14,10 @@ module.exports = (sequelize, DataTypes) => {
       date: {
         type: DataTypes.DATE,
       },
+      activate: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: null,
+      },
     },
     {
       timestamps: false,

@@ -65,7 +65,6 @@ exports.ImportIngredientOrder = async (req, res) => {
         const kt = await db.Ingredient.findOne({
           where: { id: i.id },
         });
-        console.log(kt.quantity);
         const quantity_old = kt.quantity;
         const ingredient = await db.Ingredient.update(
           {
@@ -83,6 +82,91 @@ exports.ImportIngredientOrder = async (req, res) => {
       }
     } else {
       return ReF(res, 400, "Ban nhap thieu du lieu");
+    }
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
+
+// huy hoa don do nhap sai
+exports.CancelImportIngredient = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await db.IngredientOrderItem.findAll({
+      where: { ingredient_order_id: id },
+    });
+    if (data) {
+      const i_order = await db.Ingredient_Order.update(
+        {
+          activate: false,
+        },
+        {
+          where: { id: id },
+        }
+      );
+      let check;
+      for (let i of data) {
+        const kt = await db.Ingredient.findOne({
+          where: { id: i.ingredient_id },
+        });
+        // console.log(kt.quantity);
+        const quantity_old = kt.quantity;
+        const ingredient = await db.Ingredient.update(
+          {
+            quantity: quantity_old - i.quantity,
+          },
+          { where: { id: kt.id } }
+        );
+
+        check = ingredient;
+      }
+      if (check) {
+        return ReS(res, 200, "Thanh cong");
+      } else {
+        return ReF(res, 400, "Khong thanh cong");
+      }
+    }
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
+// mo huy hoa don do nhap sai
+exports.UnCancelImportIngredient = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await db.IngredientOrderItem.findAll({
+      where: { ingredient_order_id: id },
+    });
+    if (data) {
+      const i_order = await db.Ingredient_Order.update(
+        {
+          activate: true,
+        },
+        {
+          where: { id: id },
+        }
+      );
+      let check;
+      for (let i of data) {
+        const kt = await db.Ingredient.findOne({
+          where: { id: i.ingredient_id },
+        });
+        // console.log(kt.quantity);
+        const quantity_old = kt.quantity;
+        const ingredient = await db.Ingredient.update(
+          {
+            quantity: quantity_old + i.quantity,
+          },
+          { where: { id: kt.id } }
+        );
+
+        check = ingredient;
+      }
+      if (check) {
+        return ReS(res, 200, "Thanh cong");
+      } else {
+        return ReF(res, 400, "Khong thanh cong");
+      }
     }
   } catch (error) {
     return ReE(res, error);
@@ -233,6 +317,48 @@ exports.GetAllIngredientOrder = async (req, res) => {
           attributes: ["fullname"],
         },
       ],
+      raw: true,
+    });
+    return ReT(res, data, 200);
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
+// danh sach hoa hon vat tu staff
+exports.GetAllIngredientOrderT = async (req, res) => {
+  try {
+    const data = await db.Ingredient_Order.findAll({
+      include: [
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+      ],
+      where: {
+        activate: true,
+      },
+      raw: true,
+    });
+    return ReT(res, data, 200);
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
+// danh sach hoa hon vat tu staff
+exports.GetAllIngredientOrderF = async (req, res) => {
+  try {
+    const data = await db.Ingredient_Order.findAll({
+      include: [
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+      ],
+      where: {
+        activate: false,
+      },
       raw: true,
     });
     return ReT(res, data, 200);

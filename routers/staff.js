@@ -19,6 +19,11 @@ const {
   GetAllIngredientOrderItem,
   GetAllIngredientOrderItemById,
   GetAllIngredientOrder,
+  CancleImportIngredient,
+  CancelImportIngredient,
+  UnCancelImportIngredient,
+  GetAllIngredientOrderT,
+  GetAllIngredientOrderF,
 } = require("../controllers/ingredient.controller");
 const {
   CreatePromotion,
@@ -129,6 +134,10 @@ router.get("/all-ingredient", GetAllIngredient);
 router.post("/import-ingredient", ImportIngredientOrder);
 router.get("/all-i_order_i/:id", GetAllIngredientOrderItemById);
 router.get("/all-order_item", GetAllIngredientOrder);
+router.get("/all-order_itemT", GetAllIngredientOrderT);
+router.get("/all-order_itemF", GetAllIngredientOrderF);
+router.put("/cancel-import-ingredient/:id", CancelImportIngredient);
+router.put("/uncancel-import-ingredient/:id", UnCancelImportIngredient);
 
 //cong thuc
 router.get("/get-recipe/:product_id", GetAllRecipe);

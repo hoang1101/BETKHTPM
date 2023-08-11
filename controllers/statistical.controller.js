@@ -127,11 +127,6 @@ exports.getCustomerOrder = async (req, res) => {
       order: [[db.sequelize.literal("orderCount"), "DESC"]], // Sắp xếp giảm dần theo orderCount
     });
 
-    // data.forEach((customer) => {
-    //   console.log("Khách hàng:", customer.fullname);
-    //   // console.log("Số lượng đơn đã đặt:", customer["Orders.id"].length);
-    // });
-
     return res.status(200).json({
       success: true,
       data,
