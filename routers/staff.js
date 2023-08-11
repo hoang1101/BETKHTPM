@@ -26,6 +26,10 @@ const {
   GetAllIngredientOrderF,
 } = require("../controllers/ingredient.controller");
 const {
+  LockProduct,
+  UnLockProduct,
+} = require("../controllers/product.controller");
+const {
   CreatePromotion,
   editPromotion,
   deletePromotion,
@@ -52,6 +56,8 @@ const {
   changePasswordStaff,
   FindOrder,
   GetAllRecipe,
+  getAllOrderBusiness,
+  getAllOrderIngredient,
 } = require("../controllers/staff.controller");
 const {
   getAllIngredient,
@@ -72,7 +78,10 @@ router.put("/chang-pw-staff/:user_id", changePasswordStaff);
 
 router.post("/create", createProduct);
 router.put("/edit/:id", editProduct);
+router.put("/lock-product/:id", LockProduct);
+router.put("/un-lock-product/:id", UnLockProduct);
 router.delete("/delete/:id", deleteProduct);
+
 // quan ly kinh doanh
 
 router.get("/all-order", AllOrder);
@@ -141,5 +150,9 @@ router.put("/uncancel-import-ingredient/:id", UnCancelImportIngredient);
 
 //cong thuc
 router.get("/get-recipe/:product_id", GetAllRecipe);
+
+// danh sach hoa don cua nhan vien 1 nhan vien kinh doanh
+router.get("/all-order-staff/:id", getAllOrderBusiness);
+router.get("/all-ingredient-staff/:id", getAllOrderIngredient);
 
 module.exports = router;

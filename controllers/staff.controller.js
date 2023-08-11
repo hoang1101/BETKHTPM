@@ -270,7 +270,7 @@ exports.LockAccount = async (req, res) => {
     // } else {
     const staff = await db.Staff.update(
       {
-        isAcctive: 1,
+        isAcctive: 0,
       },
       { where: { id: id } }
     );
@@ -293,7 +293,7 @@ exports.UnLockAccount = async (req, res) => {
 
     const staff = await db.Staff.update(
       {
-        isAcctive: 0,
+        isAcctive: 1,
       },
       { where: { id: id } }
     );
@@ -392,7 +392,10 @@ exports.FindAcountStaff = async (req, res) => {
     const page = req.query?.page * 1;
     const limit = req.query?.limit * 1;
     const search = req.query?.search;
-    let condition = {};
+    const isAcctive = req.query?.isAcctive;
+    let condition = {
+      isAcctive: { [Op.like]: `%${isAcctive}%` },
+    };
     let response = {};
     if (page || limit || search) {
       if (!page || !limit) return ReE(res, 400, "Missing Data Field");
@@ -404,6 +407,7 @@ exports.FindAcountStaff = async (req, res) => {
           },
         };
       }
+      console.log(condition);
       const { rows, count } = await searchStaffDao(condition, page - 1, limit);
       response.count = count;
       response.staff = rows;
@@ -490,6 +494,61 @@ exports.GetAllRecipe = async (req, res) => {
 };
 exports.EditRecipe = async (req, res) => {
   try {
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
+
+// danh sách hóa đơn nhân viên kinh doanh
+exports.getAllOrderBusiness = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await db.Orders.findAll({
+      where: {
+        staff_id: id,
+      },
+      include: [
+        {
+          model: db.Customer,
+          as: "customer",
+          attributes: ["fullname"],
+        },
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+      ],
+      raw: true,
+    });
+    return ReS(res, data, 200);
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
+// danh sách hóa đơn nhân viên kho
+exports.getAllOrderIngredient = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await db.Ingredient_Order.findAll({
+      where: {
+        staff_id: id,
+      },
+      include: [
+        // {
+        //   model: db.Customer,
+        //   as: "customer",
+        //   attributes: ["fullname"],
+        // },
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+      ],
+      raw: true,
+    });
+    return ReS(res, data, 200);
   } catch (error) {
     return ReE(res, error);
   }

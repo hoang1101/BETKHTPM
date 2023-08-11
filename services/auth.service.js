@@ -35,7 +35,7 @@ exports.registerService = ({
           address,
           gender,
           birthday,
-          issAcctive: false,
+          issAcctive: 1,
         },
       });
 
@@ -95,7 +95,7 @@ exports.registerServiceStaff = ({
           roleId,
           gender,
           birthday,
-          issAcctive: false,
+          issAcctive: 1,
         },
       });
 

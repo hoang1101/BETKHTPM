@@ -46,7 +46,7 @@ exports.LockCuatomer = async (req, res) => {
     const { id } = req.body;
     const lock = await db.Customer.update(
       {
-        isAcctive: 1,
+        isAcctive: 0,
       },
       {
         where: { id: id },
@@ -68,7 +68,7 @@ exports.UnLockCustomer = async (req, res) => {
     const { id } = req.body;
     const lock = await db.Customer.update(
       {
-        isAcctive: 0,
+        isAcctive: 1,
       },
       {
         where: { id: id },
@@ -89,7 +89,10 @@ exports.FindAcountCustomer = async (req, res) => {
     const page = req.query?.page * 1;
     const limit = req.query?.limit * 1;
     const search = req.query?.search;
-    let condition = {};
+    const isAcctive = req.query?.isAcctive;
+    let condition = {
+      isAcctive: { [Op.like]: `%${isAcctive}%` },
+    };
     let response = {};
     if (page || limit || search) {
       if (!page || !limit) return ReE(res, 400, "Missing Data Field");

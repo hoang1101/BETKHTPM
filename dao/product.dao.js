@@ -5,6 +5,7 @@ const cloudinary = require("cloudinary");
 async function getAllProductdao() {
   try {
     const response = await db.Product.findAll({
+      where: { activate: 1 },
       attributes: {
         exclude: ["createdAt", "updatedAt"],
       },

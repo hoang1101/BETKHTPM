@@ -16,7 +16,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       activate: {
         type: DataTypes.BOOLEAN,
-        defaultValue: null,
+        defaultValue: 0,
       },
     },
     {

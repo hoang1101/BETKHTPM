@@ -98,7 +98,7 @@ exports.CancelImportIngredient = async (req, res) => {
     if (data) {
       const i_order = await db.Ingredient_Order.update(
         {
-          activate: false,
+          activate: 0,
         },
         {
           where: { id: id },
@@ -140,7 +140,7 @@ exports.UnCancelImportIngredient = async (req, res) => {
     if (data) {
       const i_order = await db.Ingredient_Order.update(
         {
-          activate: true,
+          activate: 1,
         },
         {
           where: { id: id },

@@ -2,6 +2,7 @@ const { Op } = require("sequelize");
 const { getAllProductdao, searchProductDao } = require("../dao/product.dao");
 const { getRecipreByIdDao, UpdateRecipeDao } = require("../dao/recipre.dao");
 const { SS, ReE, TT, ReS } = require("../utils/util.service");
+const db = require("../models");
 exports.getAllProduct = async (req, res) => {
   try {
     const data = await getAllProductdao();
@@ -69,5 +70,53 @@ exports.SearchProduct = async (req, res) => {
       error: -1,
       msg: "Fail at auth controller: " + error,
     });
+  }
+};
+
+// dong mo 1 san pham
+
+exports.LockProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await db.Product.update(
+      {
+        activate: 0,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    if (data) {
+      return ReS(res, 200, "Da xoa thanh cong");
+    } else {
+      return ReF(res, 200, "Xoa khong thanh cong");
+    }
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
+
+exports.UnLockProduct = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const data = await db.Product.update(
+      {
+        activate: 1,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    if (data) {
+      return ReS(res, 200, "Da xoa thanh cong");
+    } else {
+      return ReF(res, 200, "Xoa khong thanh cong");
+    }
+  } catch (error) {
+    return ReE(res, error);
   }
 };

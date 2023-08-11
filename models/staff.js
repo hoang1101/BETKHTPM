@@ -40,6 +40,7 @@ module.exports = (sequelize, DataTypes) => {
       },
       isAcctive: {
         type: DataTypes.BOOLEAN,
+        defaultValue: 1,
       },
     },
     {

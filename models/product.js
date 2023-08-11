@@ -21,6 +21,10 @@ module.exports = (sequelize, DataTypes) => {
       descript: {
         type: DataTypes.STRING,
       },
+      activate: {
+        type: DataTypes.BOOLEAN,
+        defaultValue: 0,
+      },
     },
     {
       timestamps: true,
