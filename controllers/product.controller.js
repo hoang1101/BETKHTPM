@@ -38,7 +38,10 @@ exports.SearchProduct = async (req, res) => {
     const page = req.query?.page * 1;
     const limit = req.query?.limit * 1;
     const search = req.query?.search;
-    let condition = {};
+    const activate = req.query?.activate;
+    let condition = {
+      activate: { [Op.like]: `%${activate}%` },
+    };
     let response = {};
     let counts = 0;
     if (page || limit || search) {

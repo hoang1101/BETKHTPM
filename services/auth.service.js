@@ -4,6 +4,7 @@ const jwt = require("jsonwebtoken");
 require("dotenv").config();
 const { findOneUser } = require("../dao/customer.dao");
 const { findOneStaff } = require("../dao/staff.dao");
+const { ReF } = require("../utils/util.service");
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 
@@ -128,6 +129,9 @@ exports.loginService = ({ phone, password }) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await findOneUser(phone);
+      if (response.issAcctive === 0) {
+        return ReF(res, 400, "Tài khoản của bạn đã bị khóa!");
+      }
       const isCorrect =
         response && bcrypt.compareSync(password, response.password);
       const token =
@@ -162,6 +166,9 @@ exports.loginServiceStaff = ({ phone, password }) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await findOneStaff(phone);
+      if (response.issAcctive === 0) {
+        return ReF(res, 400, "Tài khoản của bạn đã bị khóa!");
+      }
       const isCorrect =
         response && bcrypt.compareSync(password, response.password);
       const token =
