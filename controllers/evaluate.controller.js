@@ -118,9 +118,6 @@ exports.getEvaluateProduct = async (req, res) => {
   try {
     const { id_product } = req.params;
     const evaluate = await db.Evaluate.findAll({
-      where: {
-        product_id: id_product,
-      },
       include: [
         {
           model: db.Product,
@@ -131,6 +128,14 @@ exports.getEvaluateProduct = async (req, res) => {
           model: db.Customer,
           as: "customer",
           attributes: ["fullname", "email", "phone"],
+        },
+        {
+          model: db.Order_Item,
+          as: "order_item",
+          attributes: [],
+          where: {
+            product_id: id_product,
+          },
         },
       ],
     });
