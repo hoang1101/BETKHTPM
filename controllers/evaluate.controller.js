@@ -138,6 +138,7 @@ exports.getEvaluateProduct = async (req, res) => {
           },
         },
       ],
+      raw: true,
     });
     return ReT(res, evaluate, 200);
   } catch (error) {
