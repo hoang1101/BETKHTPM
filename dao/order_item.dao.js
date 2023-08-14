@@ -34,7 +34,7 @@ async function statisticalProductDao() {
   }
 }
 
-async function statisticalProductDaoDate(date_) {
+async function statisticalProductDaoDate(date_, date__) {
   try {
     let data = await db.Order_Item.findAll({
       include: [
@@ -44,9 +44,13 @@ async function statisticalProductDaoDate(date_) {
           where: {
             status: 1,
             date: {
-              [Op.eq]: new Date(moment(new Date(date_)).format("YYYY-MM-DD")),
+              [Op.between]: [
+                new Date(moment(new Date(date_)).format("YYYY-MM-DD")),
+                new Date(moment(new Date(date__)).format("YYYY-MM-DD")),
+              ],
             },
           },
+
           attributes: [],
         },
       ],

@@ -71,8 +71,8 @@ exports.statisticalRevenueProduct = async (req, res) => {
 /// thong ke doanh thu, loi nhuan theo ngay tuy chon
 exports.statisticalRevenueProductDate = async (req, res) => {
   try {
-    const { date } = req.body;
-    const data = await statisticalProductDaoDate(date);
+    const { date, date_end } = req.body;
+    const data = await statisticalProductDaoDate(date, date_end);
     const product = await getAllProductdao();
 
     let datatk = [];
