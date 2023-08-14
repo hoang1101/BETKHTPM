@@ -87,18 +87,20 @@ exports.statisticalRevenueProductDate = async (req, res) => {
           dg = j.price * j.quantity;
         }
       }
-      datatk.push({
-        ...i,
-        sl: sl,
-        dg: dg,
-      });
-      tong = tong + dg;
+      if (sl > 0) {
+        datatk.push({
+          ...i,
+          sl: sl,
+          dg: dg,
+        });
+        tong = tong + dg;
+      }
     }
 
     return res.status(200).json({
       success: true,
       datatk,
-      tong,
+      count: tong,
     });
   } catch (error) {
     return ReE(res, error);
