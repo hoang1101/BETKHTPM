@@ -8,6 +8,10 @@ const {
   editProfileDao,
 } = require("../dao/customer.dao");
 const { ReE, SS, TT, ReT, ReS, ReF } = require("../utils/util.service");
+const {
+  CheckPhoneCustomer,
+  CheckEmailCustomer,
+} = require("./until.controller");
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 const checkOut = async (req, res) => {
@@ -64,21 +68,34 @@ const getAllOrderByIdFalse = async (req, res) => {
 const editProfile = async (req, res) => {
   try {
     const { id } = req.params;
+    // console.log(id);
     const { fullname, gender, email, phone, birthday, address } = req.body;
-    const user = await editProfileDao({
-      id,
-      fullname,
-      gender,
-      email,
-      phone,
-      birthday,
-      address,
-    });
-
-    if (user) {
-      return ReS(res, 200, "Update successfull");
+    const kt = await CheckPhoneCustomer(id, phone);
+    const ktemail = await CheckEmailCustomer(id, email);
+    if (kt) {
+      return ReF(res, 400, "Số điện thoại bị trùng !");
+    } else if (ktemail) {
+      return ReF(res, 400, "Email bị trùng !");
     } else {
-      return ReF(res, 400, "Update Fail");
+      const user = await db.Customer.update(
+        {
+          fullname: fullname,
+          gender: gender,
+          email: email,
+          phone: phone,
+          birthday: birthday,
+          address: address,
+        },
+        {
+          where: { id: id },
+        }
+      );
+
+      if (user) {
+        return ReS(res, 200, "Update successfull");
+      } else {
+        return ReF(res, 400, "Update Fail");
+      }
     }
   } catch (error) {
     return ReE(res, error);

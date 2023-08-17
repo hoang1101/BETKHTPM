@@ -1,4 +1,9 @@
-const { CheckPhone, CheckEmail } = require("../controllers/until.controller");
+const {
+  CheckPhone,
+  CheckEmail,
+  CheckPhoneCustomer,
+  CheckEmailCustomer,
+} = require("../controllers/until.controller");
 const db = require("../models");
 
 async function findOneUser(phone) {
@@ -125,13 +130,7 @@ async function editProfileDao({
   birthday,
 }) {
   try {
-    const kt = await CheckPhone(id, phone);
-    const ktemail = await CheckEmail(id, email);
-    if (kt) {
-      return ReF(res, 400, "So dien thoai bi trung !");
-    } else if (ktemail) {
-      return ReF(res, 400, "Email bi trung !");
-    } else {
+    {
       const user = await db.Customer.update(
         {
           fullname: fullname,
