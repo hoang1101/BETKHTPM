@@ -75,7 +75,13 @@ exports.editProduct = async (req, res) => {
     const kt = await db.Product.findOne({
       where: { name: name },
     });
-    if (kt && kt.id != id) {
+    const kt_order = await db.Order_Item.findOne({
+      where: {
+        product_id: id,
+      },
+    });
+
+    if (kt && kt.id != id && kt_order) {
       return ReF(res, 400, "Da ton tai ten san pham");
     } else {
       const product = await editProductdao(id, name, price, image, descript);
@@ -316,9 +322,9 @@ exports.EditAcount = async (req, res) => {
     const ktphone = await CheckPhone(id, phone);
     const ktemail = await CheckEmail(id, email);
     if (ktphone) {
-      return ReF(res, 400, "So dien thoai bi trung !");
+      return ReF(res, 400, "Số điện thoại bị trùng !");
     } else if (ktemail) {
-      return ReF(res, 400, "Email bi trung !");
+      return ReF(res, 400, "Email bị trùng !");
     } else {
       const user = await db.Staff.update(
         {
@@ -335,9 +341,9 @@ exports.EditAcount = async (req, res) => {
         }
       );
       if (user) {
-        return ReS(res, 200, "Cap nhat thanh cong");
+        return ReS(res, 200, "Cập nhật thành công");
       } else {
-        return ReF(res, 400, "That bai");
+        return ReF(res, 400, "Cập nhật thất bại");
       }
     }
   } catch (error) {
@@ -429,7 +435,11 @@ exports.deleteStaff = async (req, res) => {
     const ktstaff = await db.Orders.findOne({
       where: { staff_id: id },
     });
-    if (ktstaff) {
+
+    const ktstaffin = await db.Ingredient_Order.findOne({
+      where: { staff_id: id },
+    });
+    if (ktstaff || ktstaffin) {
       return ReF(res, 400, "Tai khoan nay da duyet don hang !");
     } else {
       const data = await db.Staff.destroy({

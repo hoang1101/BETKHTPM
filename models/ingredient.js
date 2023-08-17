@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         defaultValue: 0.0, // Giá trị mặc định lớn hơn 0
         allowNull: false, // Không cho phép null
         validate: {
-          min: 0.1, // Giá trị tối thiểu là 0.1
+          min: 0.0, // Giá trị tối thiểu là 0.1
         },
       },
     },

@@ -255,18 +255,6 @@ exports.sendEmailOTP = async (req, res) => {
           msg: "Not Found",
         });
       } else {
-        // emailExistence.check(email, async (error, resmail) => {
-        //   if (!resmail) {
-        //     return ReE(res, "mail không tồn tại", 200, 1000);
-        //   } else {
-        //     let [err, da] = await to(
-        //       sendMail({
-        //         to: email,
-        //         subject: "Kích hoạt tài khoản",
-        //         body: ContentActiveAccountOTP(user.fullname, token),
-        //       })
-        //     );
-        //     if (err) return ReE(res, err, 200, 1000);
         to(
           semail.sendMail({
             to: email,

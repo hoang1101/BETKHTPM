@@ -19,7 +19,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.INTEGER,
       },
       descript: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(10000),
       },
       activate: {
         type: DataTypes.BOOLEAN,

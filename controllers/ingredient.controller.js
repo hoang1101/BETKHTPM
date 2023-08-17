@@ -51,7 +51,7 @@ exports.ImportIngredientOrder = async (req, res) => {
               new Date().getMonth(),
               new Date().getDate()
             )
-          ).format("YYYY-MM-DD")
+          ).format("YYYY-MM-DD HH:mm:ss")
         ),
       });
       let check;

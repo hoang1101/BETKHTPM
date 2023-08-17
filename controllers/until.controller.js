@@ -4,42 +4,30 @@ const { ReT, ReE } = require("../utils/util.service");
 
 async function CheckPhone(id, phone) {
   try {
-    const response = await db.Customer.findOne({
-      where: {
-        phone,
-      },
-    });
     const response1 = await db.Staff.findOne({
       where: {
         phone,
       },
     });
-    if (response1 && response) {
-      if (response1.id === id || response.id === id) {
-        return false;
-      }
-      return true;
-    } else {
+    console.log(response1.id == id);
+    if (response1.id == id) {
       return false;
+    } else {
+      return true;
     }
   } catch (error) {
-    return ReE(res, error);
+    throw new Error(`${error}, traceback CheckPhone()`);
   }
 }
 async function CheckEmail(id, email) {
   try {
-    const response = await db.Customer.findOne({
-      where: {
-        email,
-      },
-    });
     const response1 = await db.Staff.findOne({
       where: {
         email,
       },
     });
-    if (response1 && response) {
-      if (response1.id === id || response.id === id) {
+    if (response1) {
+      if (response1.id == id) {
         return false;
       }
       return true;
@@ -47,7 +35,7 @@ async function CheckEmail(id, email) {
       return false;
     }
   } catch (error) {
-    return ReE(res, error);
+    throw new Error(`${error}, traceback CheckEmail()`);
   }
 }
 

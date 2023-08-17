@@ -37,8 +37,12 @@ exports.CreatePromotion = async (req, res) => {
         product_id: i,
         staff_id: staff_id,
         percent: percent,
-        start_day: new Date(moment(new Date(start_day)).format("YYYY-MM-DD")),
-        end_day: new Date(moment(new Date(end_day)).format("YYYY-MM-DD")),
+        start_day: new Date(
+          moment(new Date(start_day)).format("YYYY-MM-DD HH:mm:ss")
+        ),
+        end_day: new Date(
+          moment(new Date(end_day)).format("YYYY-MM-DD HH:mm:ss")
+        ),
       });
     }
     if (data) {
