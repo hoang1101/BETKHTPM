@@ -153,10 +153,10 @@ exports.getEvaluateProduct = async (req, res) => {
     //   raw: true,
     // });
     const result = await db.sequelize.query(
-      `SELECT eva.*,cus.fullname FROM phuclong.evaluate as eva,phuclong.order_item as item, phuclong.customer as cus
-      where eva.id_orderitem=item.id &&item.product_id=${id_product}
-      Group by customer_id
-      `,
+      `SELECT abc.*,cus.fullname from customer as cus,(SELECT eva.* FROM evaluate as eva,order_item as item
+        where eva.id_orderitem=item.id &&item.product_id=${id_product}
+        ) as abc
+        where cus.id=abc.customer_id`,
       { type: db.sequelize.QueryTypes.SELECT }
     );
 
