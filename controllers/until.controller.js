@@ -9,11 +9,13 @@ async function CheckPhone(id, phone) {
         phone,
       },
     });
-    console.log(response1.id == id);
-    if (response1.id == id) {
-      return false;
-    } else {
+    if (response1) {
+      if (response1.id == id) {
+        return false;
+      }
       return true;
+    } else {
+      return false;
     }
   } catch (error) {
     throw new Error(`${error}, traceback CheckPhone()`);
@@ -46,11 +48,13 @@ async function CheckPhoneCustomer(id, phone) {
         phone,
       },
     });
-    console.log(response1.id);
-    if (response1.id == id) {
-      return false;
-    } else {
+    if (response1) {
+      if (response1.id == id) {
+        return false;
+      }
       return true;
+    } else {
+      return false;
     }
   } catch (error) {
     throw new Error(`${error}, traceback CheckPhoneCustomer()`);
