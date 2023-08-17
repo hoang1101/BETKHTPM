@@ -29,6 +29,9 @@ exports.DanhGiaSanPham = async (req, res) => {
           start,
           img: data.url,
           comment,
+          date: new Date(
+            moment(new Date(end_day)).format("YYYY-MM-DD HH:mm:ss")
+          ),
         });
         if (evaluate) {
           return ReS(res, 200, "Tao thanh cong!");
@@ -43,6 +46,9 @@ exports.DanhGiaSanPham = async (req, res) => {
           start,
           // img: data.url,
           comment,
+          date: new Date(
+            moment(new Date(end_day)).format("YYYY-MM-DD HH:mm:ss")
+          ),
         });
         if (evaluate) {
           return ReS(res, 200, "Tao thanh cong!");
@@ -117,49 +123,14 @@ exports.EditDanhGiaSanPham = async (req, res) => {
 exports.getEvaluateProduct = async (req, res) => {
   try {
     const { id_product } = req.params;
-    // const evaluate = await db.Order_Item.findAll({
-    //   where: {
-    //     product_id: id_product,
-    //   },
-    //   attributes: [],
-    //   include: [
-    //     {
-    //       model: db.Evaluate,
-    //       as: "evaluate",
-    //       attributes: [
-    //         "id",
-    //         "id_orderitem",
-    //         "customer_id",
-    //         "start",
-    //         "img",
-    //         "comment",
-    //         "date",
-    //       ],
 
-    //       include: [
-    //         {
-    //           model: db.Customer,
-    //           as: "customer",
-    //           attributes: ["fullname", "email", "phone"],
-    //         },
-    //       ],
-    //     },
-    //     {
-    //       model: db.Product,
-    //       as: "product",
-    //       attributes: ["name"],
-    //     },
-    //   ],
-    //   raw: true,
-    // });
     const result = await db.sequelize.query(
       `SELECT abc.*,cus.fullname from customer as cus,(SELECT eva.* FROM evaluate as eva,order_item as item
-        where eva.id_orderitem=item.id &&item.product_id=${id_product}
-        ) as abc
-        where cus.id=abc.customer_id`,
+      where eva.id_orderitem=item.id &&item.product_id=${id_product}
+      ) as abc
+      where cus.id=abc.customer_id`,
       { type: db.sequelize.QueryTypes.SELECT }
     );
-
     return ReT(res, result, 200);
   } catch (error) {
     return ReE(res, error);
