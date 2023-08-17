@@ -273,7 +273,7 @@ exports.sendEmailOTP = async (req, res) => {
       // });
       // }
     } else {
-      return ReE(res, error);
+      return ReE(res, 200, "loi");
     }
   } catch (err) {
     return res.status(500).json({
