@@ -153,7 +153,7 @@ exports.getEvaluateCustomer = async (req, res) => {
     const { customer_id } = req.params;
     const result = await db.sequelize.query(
       `
-        SELECT product.name,product.image,product.price,product.descript , oi.order_id
+        SELECT product.name,product.image,product.price,product.descript , oi.order_id,oi.id,oi.quantity
         from product
         join order_item oi on oi.product_id= product.id
         LEFT JOIN evaluate e ON oi.id = e.id_orderitem
@@ -178,7 +178,7 @@ exports.getEvaluateCustomerDone = async (req, res) => {
     const { customer_id } = req.params;
     const result = await db.sequelize.query(
       `
-      SELECT product.name,product.image,product.price,product.descript , e.*,c.fullname
+      SELECT product.name,product.image,product.price,product.descript , e.*,c.fullname,oi.quantity
       from product
       join order_item oi on oi.product_id= product.id
       LEFT JOIN evaluate e ON oi.id = e.id_orderitem
