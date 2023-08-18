@@ -2,7 +2,7 @@ const { Sequelize } = require("sequelize");
 const db = require("../models");
 const { ReS, ReT, ReE, ReF } = require("../utils/util.service");
 const cloudinary = require("cloudinary");
-
+const moment = require("moment");
 exports.DanhGiaSanPham = async (req, res) => {
   try {
     const { id_orderitem, customer_id, product_id, start, img, comment } =
@@ -30,7 +30,13 @@ exports.DanhGiaSanPham = async (req, res) => {
           img: data.url,
           comment,
           date: new Date(
-            moment(new Date(end_day)).format("YYYY-MM-DD HH:mm:ss")
+            moment(
+              new Date(
+                new Date().getFullYear(),
+                new Date().getMonth(),
+                new Date().getDate()
+              )
+            ).format("YYYY-MM-DD HH:mm:ss")
           ),
         });
         if (evaluate) {
@@ -47,7 +53,13 @@ exports.DanhGiaSanPham = async (req, res) => {
           // img: data.url,
           comment,
           date: new Date(
-            moment(new Date(end_day)).format("YYYY-MM-DD HH:mm:ss")
+            moment(
+              new Date(
+                new Date().getFullYear(),
+                new Date().getMonth(),
+                new Date().getDate()
+              )
+            ).format("YYYY-MM-DD HH:mm:ss")
           ),
         });
         if (evaluate) {
@@ -144,7 +156,7 @@ exports.getEvaluateCustomer = async (req, res) => {
     const { customer_id } = req.params;
     const result = await db.sequelize.query(
       `
-        SELECT product.name,product.image,product.price,product.descript , oi.order_id,oi.id,oi.quantity
+        SELECT product.name,product.image,product.price,product.descript , oi.order_id,oi.id,oi.quantity,e.date
         from product
         join order_item oi on oi.product_id= product.id
         LEFT JOIN evaluate e ON oi.id = e.id_orderitem
