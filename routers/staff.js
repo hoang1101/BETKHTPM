@@ -63,10 +63,9 @@ const {
   getAllIngredient,
   statisticalProduct,
   statisticalRevenueProduct,
-  statisticalShipper,
-  statisticalShipperRevenue,
   statisticalRevenueProductDate,
   getCustomerOrder,
+  statisticalRevenueProductDateVer2,
 } = require("../controllers/statistical.controller");
 
 const router = require("express").Router();
@@ -96,6 +95,8 @@ router.get("/statistical", statisticalProduct);
 router.get("/statistical-revenue", statisticalRevenueProduct);
 // thong ke doan thu theo ngay tuy chon
 router.post("/statistical-revenue-date", statisticalRevenueProductDate);
+// thống kê lọi nhuận
+router.post("/statistical-profit", statisticalRevenueProductDateVer2);
 router.get("/customer-top", getCustomerOrder);
 
 // quản lý nhân viên

@@ -25,6 +25,9 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: 0,
       },
+      capital_price: {
+        type: DataTypes.FLOAT,
+      },
     },
     {
       timestamps: true,

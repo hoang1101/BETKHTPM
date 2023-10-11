@@ -17,6 +17,7 @@ const {
   DanhGiaSanPham,
   EditDanhGiaSanPham,
 } = require("../controllers/evaluate.controller");
+const { vnpay, vnpay_return } = require("../controllers/vnpay.controller");
 
 router.post("/checkOut", checkOut);
 router.get("/AllOrder/:customer_id", getAllOrderById);
@@ -41,4 +42,6 @@ router.post("/check-order", checkIngredient);
 
 // customer huy don
 router.put("/cancle-order/:id", CustomerCancleOrder);
+router.post("/create_payment_url", vnpay);
+router.get("/return", vnpay_return);
 module.exports = router;

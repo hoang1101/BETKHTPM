@@ -22,6 +22,10 @@ module.exports = (sequelize, DataTypes) => {
           min: 0.0, // Giá trị tối thiểu là 0.1
         },
       },
+      capital_price: {
+        type: DataTypes.FLOAT,
+        defaultValue: 0.0,
+      },
     },
     {
       timestamps: false,

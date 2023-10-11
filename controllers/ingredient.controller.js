@@ -1,40 +1,22 @@
 const db = require("../models");
 const moment = require("moment");
 const {
-  ImportIngredientDao,
-  UpdateImportIngredientDao,
+  ImportIngredientOrderItemDao,
+  ImportIngredientOrderDao,
+  IngredientImportDao,
+  getOneIngredientByIdDao,
+  getAllIngredientByIdDao,
+  CancelIngredientOrderByIdDao,
+  UnCancelIngredientOrderByIdDao,
 } = require("../dao/ingredient_order.dao");
 const { ReE, ReF, ReS, ReT } = require("../utils/util.service");
 const { Op } = require("sequelize");
-
-exports.ImportIngredient = async (req, res) => {
-  try {
-    const { staff_id, ingredient_id, price, quantity } = req.body;
-    const data = ImportIngredientDao(staff_id, ingredient_id, price, quantity);
-    const data1 = UpdateImportIngredientDao(ingredient_id, quantity);
-    if (data) {
-      return res.status(200).json({
-        success: true,
-        // response: data,
-      });
-    } else {
-      return res.status(400).json({
-        success: false,
-        msg: "Loi khong tao thanh cong!",
-      });
-    }
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: -1,
-      msg: "Fail at auth controller: " + error,
-    });
-  }
-};
+const { UpdatePriceProductDao } = require("../dao/recipre.dao");
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
 // hoa don nhap
+// khi huy thi active=1; mo khoa active=0
 
 exports.ImportIngredientOrder = async (req, res) => {
   try {
@@ -42,38 +24,31 @@ exports.ImportIngredientOrder = async (req, res) => {
     const data = req.body.data;
 
     if (staff_id || data) {
-      const i_order = await db.Ingredient_Order.create({
-        staff_id: staff_id,
-        date: new Date(
-          moment(
-            new Date(
-              new Date().getFullYear(),
-              new Date().getMonth(),
-              new Date().getDate()
-            )
-          ).format("YYYY-MM-DD HH:mm:ss")
-        ),
-      });
+      const i_order = await ImportIngredientOrderDao(staff_id);
       let check;
       for (let i of data) {
-        const i_order_i = await db.IngredientOrderItem.create({
-          ingredient_id: i.id,
-          ingredient_order_id: i_order.id,
-          quantity: i.qty,
-          price: i.price,
-        });
-        const kt = await db.Ingredient.findOne({
-          where: { id: i.id },
-        });
-        const quantity_old = kt.quantity;
-        const ingredient = await db.Ingredient.update(
-          {
-            quantity: i.qty + quantity_old,
-          },
-          { where: { id: kt.id } }
+        const i_order_i = await ImportIngredientOrderItemDao(
+          i.id,
+          i_order.id,
+          i.qty,
+          i.price
         );
-
+        // lay ra id cua tung nguyen lieu nhap vao
+        const kt = await getOneIngredientByIdDao(i.id);
+        // lay ra gia tri so luong va don gia trươc khi nhập vào
+        const quantity_old = kt.quantity;
+        const capital_price_old = kt.capital_price;
+        // thực hiện cập nhật giá mới và số lượng mới
+        const ingredient = await IngredientImportDao(
+          i.qty + quantity_old,
+          (i.qty * i.price + quantity_old * capital_price_old) /
+            (i.qty + quantity_old),
+          kt.id
+        );
         check = ingredient;
+
+        // tien hanh cap nhat gia moi cho sản phẩm liên quan đến nguyên liệu
+        const recipe = await UpdatePriceProductDao(i.id);
       }
       if (check) {
         return ReS(res, 200, "Thanh cong");
@@ -92,34 +67,33 @@ exports.ImportIngredientOrder = async (req, res) => {
 exports.CancelImportIngredient = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = await db.IngredientOrderItem.findAll({
-      where: { ingredient_order_id: id },
-    });
+    const data = await getAllIngredientByIdDao(id);
     if (data) {
-      const i_order = await db.Ingredient_Order.update(
-        {
-          activate: 0,
-        },
-        {
-          where: { id: id },
-        }
-      );
       let check;
       for (let i of data) {
-        const kt = await db.Ingredient.findOne({
-          where: { id: i.ingredient_id },
-        });
-        // console.log(kt.quantity);
+        const kt = await getOneIngredientByIdDao(i.ingredient_id);
         const quantity_old = kt.quantity;
-        const ingredient = await db.Ingredient.update(
-          {
-            quantity: quantity_old - i.quantity,
-          },
-          { where: { id: kt.id } }
+        const capital_price_old = kt.capital_price;
+        if (quantity_old < i.quantity || quantity_old - i.quantity === 0) {
+          return ReF(
+            res,
+            400,
+            "So luong nguyen lieu trong kho da dung den khong the huy"
+          );
+        }
+        const ingredient = await IngredientImportDao(
+          quantity_old - i.quantity,
+          (quantity_old * capital_price_old - i.quantity * i.price) /
+            (quantity_old - i.quantity),
+          kt.id
         );
+
+        const recipe = await UpdatePriceProductDao(i.ingredient_id);
 
         check = ingredient;
       }
+      const i_order = await CancelIngredientOrderByIdDao(id);
+
       if (check) {
         return ReS(res, 200, "Thanh cong");
       } else {
@@ -130,36 +104,31 @@ exports.CancelImportIngredient = async (req, res) => {
     return ReE(res, error);
   }
 };
+
+// moi lam toi day
+
 // mo huy hoa don do nhap sai
 exports.UnCancelImportIngredient = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = await db.IngredientOrderItem.findAll({
-      where: { ingredient_order_id: id },
-    });
+    const data = await getAllIngredientByIdDao(id);
     if (data) {
-      const i_order = await db.Ingredient_Order.update(
-        {
-          activate: 1,
-        },
-        {
-          where: { id: id },
-        }
-      );
+      const i_order = await UnCancelIngredientOrderByIdDao(id);
       let check;
       for (let i of data) {
-        const kt = await db.Ingredient.findOne({
-          where: { id: i.ingredient_id },
-        });
-        // console.log(kt.quantity);
+        const kt = await getOneIngredientByIdDao(i.ingredient_id);
+        // lay gia tri
         const quantity_old = kt.quantity;
-        const ingredient = await db.Ingredient.update(
-          {
-            quantity: quantity_old + i.quantity,
-          },
-          { where: { id: kt.id } }
+        const capital_price_old = kt.capital_price;
+
+        const ingredient = await IngredientImportDao(
+          quantity_old + i.quantity,
+          (quantity_old * capital_price_old + i.quantity * i.price) /
+            (quantity_old + i.quantity),
+          kt.id
         );
 
+        const recipe = await UpdatePriceProductDao(i.ingredient_id);
         check = ingredient;
       }
       if (check) {
@@ -187,6 +156,7 @@ exports.CreateIngredient = async (req, res) => {
         name: name,
         measure_id: measure_id,
         quantity: 0,
+        capital_price: 0,
       });
       if (data) {
         return ReS(res, 200, "Thanh cong");

@@ -22,6 +22,9 @@ module.exports = (sequelize, DataTypes) => {
       quantity: {
         type: DataTypes.INTEGER,
       },
+      capital_price: {
+        type: DataTypes.FLOAT,
+      },
     },
     {
       timestamps: false,

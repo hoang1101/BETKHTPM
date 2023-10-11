@@ -76,13 +76,25 @@ async function createProductdao(name, price, image, descript, recipre) {
       },
       function (error, result) {}
     );
+    // xu ly nhap gia trung binh cho san pham khi tao moi
+    let sum = 0;
+    for (let j of recipre) {
+      // console.log(j.ingredient_id);
+      const data1 = await db.Ingredient.findOne({
+        where: { id: j.ingredient_id },
+      });
+      sum = sum + j.quantity * data1.capital_price;
+    }
+
+    // tao san pham
     const product = await db.Product.create({
       name,
       image: data.url,
-      price,
+      price: sum + sum * 0.3,
       descript,
+      capital_price: sum,
     });
-    // console.log(recipre);
+    // tao cong thuc cho san pham
     for (let i of recipre) {
       const data = await db.Recipe.create({
         product_id: product.id,
@@ -194,6 +206,8 @@ async function searchProductDao(condition, page, limit) {
     );
   }
 }
+
+//
 
 module.exports = {
   getAllProductdao,
