@@ -66,13 +66,15 @@ module.exports.ReS = function (res, stt, text) {
   // console.log(text);
   return res.json({ success: true, code: stt, msg: text });
 };
-
+// trả về False Web Response
 module.exports.ReF = function (res, stt, text) {
   // Success Web Response
   // console.log(text);
   // res.satus = 400;
   return res.json({ success: false, code: stt, msg: text });
 };
+
+// trả về success cùng với data
 module.exports.SS = function (res, data, satus = 200) {
   let send_data = { success: true };
   if (typeof data == "object") {
@@ -81,7 +83,7 @@ module.exports.SS = function (res, data, satus = 200) {
   if (typeof code !== "undefined") res.satus = satus;
   return res.json({ success: true, data: send_data });
 };
-
+//
 module.exports.TT = function (res, data, statuscode = 200) {
   // Success Web Response
   let send_data = { success: true };
@@ -94,7 +96,7 @@ module.exports.TT = function (res, data, statuscode = 200) {
 
   return res.json(send_data);
 };
-
+// trả về data cùng success
 module.exports.ReT = function (res, data, statuscode = 200) {
   // Success Web Response
   let send_data = {};

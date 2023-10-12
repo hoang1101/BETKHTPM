@@ -1,5 +1,6 @@
 module.exports = {
   message: {
+    // phần đăng nhập và đăng ký
     LOGIN_SUCCESS: "Đăng nhập thành công",
     REGISTER_SUCCESS_ST: "Tạo tài khoản thành công cho nhân viên",
     REGISTER_SUCCESS_US:
@@ -24,5 +25,13 @@ module.exports = {
       "Tài khoản của bạn đã bị khóa vui lòng liên hệ tổng đài để được hỗ trợ",
     SEND_MAIL_OTP: "Gửi OTP không thành công cho người dùng",
     RESET_PASSWORD: "Mật khẩu mới đã được gửi về mail của bạn",
+    // admin controller
+    PHONE_DUPLICATE: "Số điện thoại của bạn đã bị trùng, vui lòng thay đổi.",
+    EMAIL_DUPLICATE: "Email của bạn đã bị trùng, vui lòng thay đổi.",
+    UPDATE_SUCCESS: "Cập nhật dữ liệu thành công.",
+    UPDATE_FALSE: "Cập nhật dữ liệu không thành công.",
+    MISSING_DATA_INPUT:
+      "Trường dữ liệu bị thiếu. Vui lòng điền đầy đủ thông tin.",
+    // customer controller
   },
 };

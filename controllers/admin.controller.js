@@ -3,6 +3,11 @@ const { searchCustomerDao } = require("../dao/customer.dao");
 const db = require("../models");
 const { ReE, ReS } = require("../utils/util.service");
 const { CheckPhone, CheckEmail } = require("./until.controller");
+const config = require("../config/config");
+const {
+  updateProfileByAdminDao,
+  unLockCustomerDao,
+} = require("../dao/staff.dao");
 
 exports.editProfileByAdmin = async (req, res) => {
   try {
@@ -11,28 +16,25 @@ exports.editProfileByAdmin = async (req, res) => {
     const ktphone = await CheckPhone(id, phone);
     const ktemail = await CheckEmail(id, email);
     if (ktphone) {
-      return ReF(res, 400, "So dien thoai bi trung !");
+      return ReF(res, 200, config.message.PHONE_DUPLICATE);
     } else if (ktemail) {
-      return ReF(res, 400, "Email bi trung !");
+      return ReF(res, 200, config.message.EMAIL_DUPLICATE);
     } else {
-      const user = await db.Staff.update(
-        {
-          fullname: fullname,
-          gender: gender,
-          email: email,
-          phone: phone,
-          birthday: birthday,
-          address: address,
-          roleId: roleId,
-        },
-        {
-          where: { id: id },
-        }
+      // hàm update profile staff
+      const user = await updateProfileByAdminDao(
+        fullname,
+        gender,
+        email,
+        phone,
+        birthday,
+        address,
+        roleId,
+        id
       );
       if (user) {
-        return ReS(res, 200, "Cap nhat thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "That bai");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -44,18 +46,11 @@ exports.editProfileByAdmin = async (req, res) => {
 exports.LockCuatomer = async (req, res) => {
   try {
     const { id } = req.body;
-    const lock = await db.Customer.update(
-      {
-        isAcctive: 0,
-      },
-      {
-        where: { id: id },
-      }
-    );
+    const lock = await lockCustomerDao(id);
     if (lock) {
-      return ReS(res, 200, "Successfull !");
+      return ReS(res, 200, config.message.UPDATE_SUCCESS);
     } else {
-      return ReF(res, 400, "Fail!");
+      return ReF(res, 200, config.message.UPDATE_FALSE);
     }
   } catch (error) {
     return ReE(res, error);
@@ -66,18 +61,11 @@ exports.LockCuatomer = async (req, res) => {
 exports.UnLockCustomer = async (req, res) => {
   try {
     const { id } = req.body;
-    const lock = await db.Customer.update(
-      {
-        isAcctive: 1,
-      },
-      {
-        where: { id: id },
-      }
-    );
+    const lock = await unLockCustomerDao(id);
     if (lock) {
-      return ReS(res, 200, "Successfull !");
+      return ReS(res, 200, config.message.UPDATE_SUCCESS);
     } else {
-      return ReF(res, 400, "Fail!");
+      return ReF(res, 200, config.message.UPDATE_FALSE);
     }
   } catch (error) {
     return ReE(res, error);
@@ -95,7 +83,8 @@ exports.FindAcountCustomer = async (req, res) => {
     };
     let response = {};
     if (page || limit || search) {
-      if (!page || !limit) return ReE(res, 400, "Missing Data Field");
+      if (!page || !limit)
+        return ReE(res, 200, config.message.MISSING_DATA_INPUT);
       if (search) {
         condition = {
           ...condition,

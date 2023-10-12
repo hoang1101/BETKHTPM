@@ -36,6 +36,7 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.BOOLEAN,
         defaultValue: 0,
       },
+      // bằng 0 là đang hoạt động
     },
     {
       timestamps: false,

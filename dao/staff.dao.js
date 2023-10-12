@@ -47,8 +47,76 @@ async function searchStaffDao(condition, page, limit) {
     );
   }
 }
+// update profile staff by admin
+async function updateProfileByAdminDao(
+  fullname,
+  gender,
+  email,
+  phone,
+  birthday,
+  address,
+  roleId,
+  id
+) {
+  try {
+    const user = await db.Staff.update(
+      {
+        fullname: fullname,
+        gender: gender,
+        email: email,
+        phone: phone,
+        birthday: birthday,
+        address: address,
+        roleId: roleId,
+      },
+      {
+        where: { id: id },
+      }
+    );
+    return user;
+  } catch (error) {
+    `Error: ${error}, traceback at updateProfileByAdminDao function at staff.dao.js file`;
+  }
+}
+// lock tai khoản khách hàng
+async function lockCustomerDao(id) {
+  try {
+    const lock = await db.Customer.update(
+      {
+        isAcctive: 1,
+      },
+      {
+        where: { id: id },
+      }
+    );
+    return lock;
+  } catch (error) {
+    `Error: ${error}, traceback at lockCustomerDao function at staff.dao.js file`;
+  }
+}
+
+//unlock
+// lock tai khoản khách hàng
+async function unLockCustomerDao(id) {
+  try {
+    const lock = await db.Customer.update(
+      {
+        isAcctive: 0,
+      },
+      {
+        where: { id: id },
+      }
+    );
+    return lock;
+  } catch (error) {
+    `Error: ${error}, traceback at unLockCustomerDao function at staff.dao.js file`;
+  }
+}
 module.exports = {
   findOneStaff,
   findOneStaffEmail,
   searchStaffDao,
+  updateProfileByAdminDao,
+  unLockCustomerDao,
+  lockCustomerDao,
 };
