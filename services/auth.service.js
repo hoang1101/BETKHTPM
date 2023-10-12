@@ -5,6 +5,7 @@ require("dotenv").config();
 const { findOneUser } = require("../dao/customer.dao");
 const { findOneStaff } = require("../dao/staff.dao");
 const { ReF } = require("../utils/util.service");
+const config = require("../config/config");
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 
@@ -116,7 +117,7 @@ exports.registerServiceStaff = ({
         error: token ? 0 : 2, // 0 thanh cong // 2 that bai
         msg: token
           ? "Register is successfully !"
-          : "TaiKhoan has been aldready used !",
+          : "Register has been aldready used !",
         token: token || null,
         success: token ? true : false,
       });
@@ -130,7 +131,7 @@ exports.loginService = ({ phone, password }) =>
     try {
       const response = await findOneUser(phone);
       if (response.issAcctive === 0) {
-        return ReF(res, 400, "Tài khoản của bạn đã bị khóa!");
+        return ReF(res, 200, config.message.LOCK_LOGIN);
       }
       const isCorrect =
         response && bcrypt.compareSync(password, response.password);
@@ -167,7 +168,7 @@ exports.loginServiceStaff = ({ phone, password }) =>
     try {
       const response = await findOneStaff(phone);
       if (response.issAcctive === 0) {
-        return ReF(res, 400, "Tài khoản của bạn đã bị khóa!");
+        return ReF(res, 200, config.message.LOCK_LOGIN);
       }
       const isCorrect =
         response && bcrypt.compareSync(password, response.password);

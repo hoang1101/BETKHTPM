@@ -66,6 +66,7 @@ module.exports.ReS = function (res, stt, text) {
   // console.log(text);
   return res.json({ success: true, code: stt, msg: text });
 };
+
 module.exports.ReF = function (res, stt, text) {
   // Success Web Response
   // console.log(text);

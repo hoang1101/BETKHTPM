@@ -5,12 +5,13 @@ const speakeasy = require("speakeasy");
 const emailExistence = require("email-existence");
 const { findOneUser, findOneUserEmail } = require("../dao/customer.dao");
 const { findOneStaff } = require("../dao/staff.dao");
-const { ReS, ReE, to } = require("../utils/util.service");
+const { ReS, ReE, to, ReF } = require("../utils/util.service");
 const semail = require("../utils/mailer");
 const {
   ContentActiveAccount_vi,
   ContentActiveAccountOTP,
 } = require("../template/email");
+const config = require("../config/config");
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 
@@ -18,12 +19,13 @@ exports.loginCustomer = async (req, res) => {
   const { phone, password } = req.body;
 
   try {
-    if (!phone || !password)
-      return res.status(400).json({
-        success: false,
-        error: 1,
-        msg: "Missing inputs !",
-      });
+    if (!phone) return ReF(res, 200, config.message.VALIDATION_PHONE_E001);
+    if (!password)
+      return ReF(res, 200, config.message.VALIDATION_PASSWORD_E001);
+    if (phone.length < 10)
+      return ReF(res, 200, config.message.VALIDATION_PHONE_E002);
+    if (password.length < 6)
+      return ReF(res, 200, config.message.VALIDATION_PASSWORD_E002);
 
     const customer = await findOneUser(phone);
 
@@ -37,10 +39,7 @@ exports.loginCustomer = async (req, res) => {
         data: customer,
       });
     } else {
-      return res.status(200).json({
-        success: false,
-        mgs,
-      });
+      return ReF(res, 200, config.message.LOGIN_E001);
     }
   } catch (error) {
     return res.status(500).json({
@@ -56,12 +55,13 @@ exports.loginStaff = async (req, res) => {
   const { phone, password } = req.body;
 
   try {
-    if (!phone || !password)
-      return res.status(400).json({
-        success: false,
-        error: 1,
-        msg: "Missing inputs !",
-      });
+    if (!phone) return ReF(res, 200, config.message.VALIDATION_PHONE_E001);
+    if (phone.length < 10 && phone.length < 10)
+      return ReF(res, 200, config.message.VALIDATION_PHONE_E002);
+    if (!password)
+      return ReF(res, 200, config.message.VALIDATION_PASSWORD_E001);
+    if (password.length < 6 && password.length > 8)
+      return ReF(res, 200, config.message.VALIDATION_PASSWORD_E002);
 
     const customer = await findOneStaff(phone);
 
@@ -70,15 +70,13 @@ exports.loginStaff = async (req, res) => {
     const mgs = response.msg;
     if (response.success === true) {
       return res.status(200).json({
+        message: config.message.LOGIN_SUCCESS,
         success: true,
         token,
         data: customer,
       });
     } else {
-      return res.status(400).json({
-        success: false,
-        mgs,
-      });
+      return ReF(res, 200, config.message.LOGIN_E001);
     }
   } catch (error) {
     return res.status(500).json({
@@ -90,16 +88,47 @@ exports.loginStaff = async (req, res) => {
 };
 
 // register Customer
+function isValidEmail(email) {
+  // Sử dụng biểu thức chính quy để kiểm tra định dạng email
+  var emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return emailPattern.test(email);
+}
 
 exports.register = async (req, res) => {
   try {
-    const { password, fullname, email, phone, roleId, address } = req.body;
-    if (!password || !fullname || !email || !phone)
-      return res.status(400).json({
-        success: false,
-        error: 1,
-        msg: "Missing inputs !",
-      });
+    // kiểm tra dữ liệu
+    const {
+      password,
+      fullname,
+      email,
+      phone,
+
+      address,
+      gender,
+      birthday,
+    } = req.body;
+    // email
+    if (!email) return ReF(res, 200, config.message.VALIDATION_EMAIL_E001);
+    if (!isValidEmail(email))
+      return ReF(res, 200, config.message.SIGNUP_EMAIL_ERROR);
+    // phone
+    if (!phone) return ReF(res, 200, config.message.SIGNUP_PHONE_ERROR);
+    if (phone.length < 10 && phone.length < 10)
+      return ReF(res, 200, config.message.VALIDATION_PHONE_E002);
+    // password
+    if (!password)
+      return ReF(res, 200, config.message.VALIDATION_PASSWORD_E001);
+    if (password.length < 6 && password.length > 8)
+      return ReF(res, 200, config.message.VALIDATION_PASSWORD_E002);
+    // name
+    if (!fullname) return ReF(res, 200, config.message.SIGNUP_NAME_ERROR);
+    // address
+    if (!address) return ReF(res, 200, config.message.SIGNUP_ADDRESS_ERROR);
+    // gender
+    if (!gender) return ReF(res, 200, config.message.SIGNUP_ADDRESS_ERROR);
+    // birthday
+    if (!birthday) return ReF(res, 200, config.message.SIGNUP_BIRTHDAY_ERROR);
+
     const response = await authController.registerService(req.body);
     //check eamil có tồn tại không
 
@@ -110,6 +139,7 @@ exports.register = async (req, res) => {
           msg: "Not Found",
         });
       } else {
+        // check email xem email có thật không
         // emailExistence.check(email, async (error, resmail) => {
         //   if (error) {
         //     return ReE(res, "Email không tồn tại", 200, 1000);
@@ -139,13 +169,10 @@ exports.register = async (req, res) => {
       return res.status(200).json({
         success: true,
         response,
-        message: "Gửi mail thành công, vui lòng kiểm tra email",
+        message: config.message.REGISTER_SUCCESS_US,
       });
     } else {
-      return res.status(400).json({
-        success: false,
-        msg: "Error Register",
-      });
+      return ReF(res, 200, config.message.REGISTER_E001);
     }
   } catch (error) {
     return res.status(500).json({
@@ -170,45 +197,33 @@ exports.registerStaff = async (req, res) => {
     birthday,
   } = req.body;
   try {
-    if (
-      !password ||
-      !fullname ||
-      !email ||
-      !phone ||
-      !roleId ||
-      !address ||
-      !gender ||
-      !birthday
-    )
-      return res.status(400).json({
-        success: false,
-        error: 1,
-        msg: "Missing inputs !",
-      });
+    // email
+    if (!email) return ReF(res, 200, config.message.VALIDATION_EMAIL_E001);
+    if (!isValidEmail(email))
+      return ReF(res, 200, config.message.SIGNUP_EMAIL_ERROR);
+    // phone
+    if (!phone) return ReF(res, 200, config.message.SIGNUP_PHONE_ERROR);
+    if (phone.length < 10 && phone.length < 10)
+      return ReF(res, 200, config.message.VALIDATION_PHONE_E002);
+    // password
+    if (!password)
+      return ReF(res, 200, config.message.VALIDATION_PASSWORD_E001);
+    if (password.length < 6 && password.length > 8)
+      return ReF(res, 200, config.message.VALIDATION_PASSWORD_E002);
+    // name
+    if (!fullname) return ReF(res, 200, config.message.SIGNUP_NAME_ERROR);
+    // address
+    if (!address) return ReF(res, 200, config.message.SIGNUP_ADDRESS_ERROR);
+    // gender
+    if (!gender) return ReF(res, 200, config.message.SIGNUP_ADDRESS_ERROR);
+    // birthday
+    if (!birthday) return ReF(res, 200, config.message.SIGNUP_BIRTHDAY_ERROR);
+    // roleId
+    if (!roleId) return ReF(res, 200, config.message.SIGNUP_ROLEID_ERROR);
+
     const response = await authController.registerServiceStaff(req.body);
 
     if (response.success === true) {
-      // if (!email) {
-      //   return res.status(404).json({
-      //     success: false,
-      //     msg: "Not Found",
-      //   });
-      // } else {
-      //   emailExistence.check(email, async (error, resmail) => {
-      //     if (!resmail) {
-      //       return ReE(res, "Email không tồn tại", 200, 1000);
-      //     } else {
-      //       let [err, da] = await to(
-      //         sendMail({
-      //           to: email,
-      //           subject: "Thông báo hệ thống",
-      //           body: ContentActiveAccount_vi(fullname),
-      //         })
-      //       );
-      //       if (err) return ReE(res, err, 200, 1000);
-      //     }
-      //   });
-      // }
       to(
         semail.sendMail({
           to: email,
@@ -219,12 +234,10 @@ exports.registerStaff = async (req, res) => {
       return res.status(200).json({
         success: true,
         response,
+        message: config.message.REGISTER_SUCCESS_ST,
       });
     } else {
-      return res.status(400).json({
-        success: false,
-        msg: "Error Register",
-      });
+      return ReF(res, 200, config.message.REGISTER_E001);
     }
   } catch (error) {
     return res.status(500).json({
@@ -238,6 +251,7 @@ exports.registerStaff = async (req, res) => {
 exports.sendEmailOTP = async (req, res) => {
   try {
     const { email } = req.body;
+
     const user = await findOneUserEmail(email);
 
     if (user) {
@@ -249,11 +263,10 @@ exports.sendEmailOTP = async (req, res) => {
       });
       //check eamil có tồn tại không
 
-      if (!email) {
-        return res.status(404).json({
-          success: false,
-          msg: "Not Found",
-        });
+      // email
+      if (!email) return ReF(res, 200, config.message.VALIDATION_EMAIL_E001);
+      else if (!isValidEmail(email)) {
+        return ReF(res, 200, config.message.SIGNUP_EMAIL_ERROR);
       } else {
         to(
           semail.sendMail({
@@ -270,10 +283,8 @@ exports.sendEmailOTP = async (req, res) => {
           200
         );
       }
-      // });
-      // }
     } else {
-      return ReE(res, 200, "loi");
+      return ReF(res, 200, SEND_MAIL_OTP);
     }
   } catch (err) {
     return res.status(500).json({
@@ -311,12 +322,11 @@ exports.ResetPassword = async (req, res) => {
   try {
     //check eamil có tồn tại không
 
-    if (!email) {
-      return res.status(404).json({
-        success: false,
-        msg: "Not Found",
-      });
-    } else {
+    // email
+    if (!email) return ReF(res, 200, config.message.VALIDATION_EMAIL_E001);
+    if (!isValidEmail(email))
+      return ReF(res, 200, config.message.SIGNUP_EMAIL_ERROR);
+    else {
       const checkEmail = await db.User.findOne({
         where: {
           email: email,
@@ -360,19 +370,13 @@ exports.ResetPassword = async (req, res) => {
           }
         );
         if (updatePassword) {
-          return ReS(
-            res,
-            {
-              msg: "mk mới của bạn đã được gửi về mail của bạn",
-            },
-            200
-          );
+          return ReS(res, 200, config.message.RESET_PASSWORD);
         }
       } catch (error) {
         return res.status(500).json({
           success: false,
           error: -1,
-          msg: "khong thay đổi được mật khâuw" + error,
+          msg: "Fail at auth controller:" + error,
         });
       }
     }
