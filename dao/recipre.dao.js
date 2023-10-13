@@ -102,9 +102,45 @@ async function UpdatePriceProductDao(ingredient_id) {
   }
 }
 
+// getAllRecipe
+
+async function getAllRecipeDao(id) {
+  try {
+    const recipe = await db.Recipe.findAll({
+      where: { product_id: id },
+    });
+    return recipe;
+  } catch (error) {
+    throw new Error(`${error}, traceback getAllRecipeDao()`);
+  }
+}
+
+//getAllRecipeIngredientDao
+async function getAllRecipeIngredientDao(id) {
+  try {
+    const data = await db.Recipe.findAll({
+      // group: ["product_id"],
+      where: { product_id: id },
+      include: [
+        {
+          model: db.Ingredient,
+          as: "ingredient",
+          attributes: ["name"],
+        },
+      ],
+      raw: true,
+    });
+    return data;
+  } catch (error) {
+    throw new Error(`${error}, traceback getAllRecipeIngredientDao()`);
+  }
+}
+
 module.exports = {
   createRecipe,
   getRecipreByIdDao,
   UpdateRecipeDao,
   UpdatePriceProductDao,
+  getAllRecipeDao,
+  getAllRecipeIngredientDao,
 };

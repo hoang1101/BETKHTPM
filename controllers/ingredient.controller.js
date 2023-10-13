@@ -8,10 +8,26 @@ const {
   getAllIngredientByIdDao,
   CancelIngredientOrderByIdDao,
   UnCancelIngredientOrderByIdDao,
+  getAllIngredientOrderStaffTrue,
+  getAllIngredientOrderStaffFalse,
 } = require("../dao/ingredient_order.dao");
 const { ReE, ReF, ReS, ReT } = require("../utils/util.service");
 const { Op } = require("sequelize");
 const { UpdatePriceProductDao } = require("../dao/recipre.dao");
+const config = require("../config/config");
+const {
+  getIngredientByName,
+  getIngredientByNameDao,
+  createIngredientDao,
+  updateIngredientDao,
+  deleteIngredientDao,
+} = require("../dao/ingredient.dao");
+const {
+  getOneMeasure,
+  getOneMeasureDao,
+  createMeasureDao,
+  updateMeasureDao,
+} = require("../dao/measure.dao");
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
@@ -51,12 +67,12 @@ exports.ImportIngredientOrder = async (req, res) => {
         const recipe = await UpdatePriceProductDao(i.id);
       }
       if (check) {
-        return ReS(res, 200, "Thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Khong thanh cong");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     } else {
-      return ReF(res, 400, "Ban nhap thieu du lieu");
+      return ReF(res, 200, config.message.MISSING_DATA_INPUT);
     }
   } catch (error) {
     return ReE(res, error);
@@ -75,11 +91,7 @@ exports.CancelImportIngredient = async (req, res) => {
         const quantity_old = kt.quantity;
         const capital_price_old = kt.capital_price;
         if (quantity_old < i.quantity || quantity_old - i.quantity === 0) {
-          return ReF(
-            res,
-            400,
-            "So luong nguyen lieu trong kho da dung den khong the huy"
-          );
+          return ReF(res, 200, config.message.INGREDIENT_QUANTITY);
         }
         const ingredient = await IngredientImportDao(
           quantity_old - i.quantity,
@@ -95,9 +107,9 @@ exports.CancelImportIngredient = async (req, res) => {
       const i_order = await CancelIngredientOrderByIdDao(id);
 
       if (check) {
-        return ReS(res, 200, "Thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Khong thanh cong");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -132,9 +144,9 @@ exports.UnCancelImportIngredient = async (req, res) => {
         check = ingredient;
       }
       if (check) {
-        return ReS(res, 200, "Thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Khong thanh cong");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -146,22 +158,15 @@ exports.UnCancelImportIngredient = async (req, res) => {
 exports.CreateIngredient = async (req, res) => {
   try {
     const { name, measure_id } = req.body;
-    const kt = await db.Ingredient.findOne({
-      where: { name: name },
-    });
+    const kt = await getIngredientByNameDao(name);
     if (kt) {
-      return ReF(res, 400, "Da ton tai ten nguyen lieu nay");
+      return ReF(res, 200, config.message.INGREDIENT_DUPLICATE);
     } else {
-      const data = await db.Ingredient.create({
-        name: name,
-        measure_id: measure_id,
-        quantity: 0,
-        capital_price: 0,
-      });
+      const data = await createIngredientDao(name, measure_id);
       if (data) {
-        return ReS(res, 200, "Thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Khong thanh cong");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -175,23 +180,15 @@ exports.EditIngredient = async (req, res) => {
   try {
     const { id, name, measure_id } = req.body;
 
-    const kt = await db.Ingredient.findOne({
-      where: { name: name },
-    });
+    const kt = await getIngredientByNameDao(name);
     if (kt && kt.id != id) {
-      return ReF(res, 400, "Da ton tai ten nguyen lieu nay");
+      return ReF(res, 200, config.message.INGREDIENT_DUPLICATE);
     } else {
-      const data = await db.Ingredient.update(
-        {
-          name: name,
-          measure_id: measure_id,
-        },
-        { where: { id: id } }
-      );
+      const data = await updateIngredientDao(name, measure_id, id);
       if (data) {
-        return ReS(res, 200, "Thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Khong thanh cong");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -202,21 +199,15 @@ exports.EditIngredient = async (req, res) => {
 exports.DeleteIngredient = async (req, res) => {
   try {
     const { id } = req.params;
-    const kt = await db.IngredientOrderItem.findOne({
-      where: {
-        ingredient_id: id,
-      },
-    });
+    const kt = await getOneIngredientOrderByIdDao(id);
     if (kt) {
-      return ReF(res, 400, "Xoa khong thanh cong, da ton tai");
+      return ReF(res, 200, config.message.DELETE_ERROR);
     } else {
-      const data = await db.Ingredient.destroy({
-        where: { id: id },
-      });
+      const data = await deleteIngredientDao(id);
       if (data) {
-        return ReS(res, 200, "Xoa thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Xoa khong thanh cong");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -226,15 +217,7 @@ exports.DeleteIngredient = async (req, res) => {
 
 exports.GetAllIngredient = async (req, res) => {
   try {
-    const data = await db.Ingredient.findAll({
-      include: [
-        {
-          model: db.Measure,
-          as: "measure",
-        },
-      ],
-      raw: true,
-    });
+    const data = await getAllIngredientMeasureDao();
     return ReT(res, data, 200);
   } catch (error) {
     return ReE(res, error);
@@ -245,31 +228,7 @@ exports.GetAllIngredient = async (req, res) => {
 exports.GetAllIngredientOrderItemById = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = await db.IngredientOrderItem.findAll({
-      where: { ingredient_order_id: id },
-      include: [
-        {
-          model: db.Ingredient,
-          as: "ingredient",
-          attributes: ["name"],
-          include: [{ model: db.Measure, as: "measure", attributes: ["name"] }],
-        },
-
-        {
-          model: db.Ingredient_Order,
-          as: "ingredient_order",
-          include: [
-            {
-              model: db.Staff,
-              as: "staff",
-              attributes: ["fullname"],
-            },
-          ],
-          attributes: ["id"],
-        },
-      ],
-      raw: true,
-    });
+    const data = await getAllIngredientOrderByIdDao();
     return ReT(res, data, 200);
   } catch (error) {
     return ReE(res, error);
@@ -279,16 +238,7 @@ exports.GetAllIngredientOrderItemById = async (req, res) => {
 // danh sach hoa hon vat tu staff
 exports.GetAllIngredientOrder = async (req, res) => {
   try {
-    const data = await db.Ingredient_Order.findAll({
-      include: [
-        {
-          model: db.Staff,
-          as: "staff",
-          attributes: ["fullname"],
-        },
-      ],
-      raw: true,
-    });
+    const data = await getAllIngredientOrderStaff();
     return ReT(res, data, 200);
   } catch (error) {
     return ReE(res, error);
@@ -297,19 +247,7 @@ exports.GetAllIngredientOrder = async (req, res) => {
 // danh sach hoa hon vat tu staff
 exports.GetAllIngredientOrderT = async (req, res) => {
   try {
-    const data = await db.Ingredient_Order.findAll({
-      include: [
-        {
-          model: db.Staff,
-          as: "staff",
-          attributes: ["fullname"],
-        },
-      ],
-      where: {
-        activate: true,
-      },
-      raw: true,
-    });
+    const data = await getAllIngredientOrderStaffTrue();
     return ReT(res, data, 200);
   } catch (error) {
     return ReE(res, error);
@@ -318,19 +256,7 @@ exports.GetAllIngredientOrderT = async (req, res) => {
 // danh sach hoa hon vat tu staff
 exports.GetAllIngredientOrderF = async (req, res) => {
   try {
-    const data = await db.Ingredient_Order.findAll({
-      include: [
-        {
-          model: db.Staff,
-          as: "staff",
-          attributes: ["fullname"],
-        },
-      ],
-      where: {
-        activate: false,
-      },
-      raw: true,
-    });
+    const data = await getAllIngredientOrderStaffFalse();
     return ReT(res, data, 200);
   } catch (error) {
     return ReE(res, error);
@@ -341,21 +267,15 @@ exports.GetAllIngredientOrderF = async (req, res) => {
 exports.CreateMeasure = async (req, res) => {
   try {
     const { name } = req.body;
-    const kt = await db.Measure.findOne({
-      where: {
-        name: name,
-      },
-    });
+    const kt = await getOneMeasureDao(name);
     if (kt) {
-      return ReF(res, 400, "Da ton tai");
+      return ReF(res, 200, config.message.MEASURE_DUPLICATE);
     } else {
-      const data = await db.Measure.create({
-        name,
-      });
+      const data = await createMeasureDao(name);
       if (data) {
-        return ReS(res, 200, "Tao thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Tao khong thanh cong");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -367,24 +287,15 @@ exports.EditMeasure = async (req, res) => {
   try {
     const { id } = req.params;
     const { name } = req.body;
-    const kt = await db.Measure.findOne({
-      where: {
-        name: name,
-      },
-    });
+    const kt = await getOneMeasureDao(name);
     if (kt && kt.id != id) {
-      return ReF(res, 400, "Da ton tai");
+      return ReF(res, 200, config.message.MEASURE_DUPLICATE);
     } else {
-      const data = await db.Measure.update(
-        {
-          name,
-        },
-        { where: { id: id } }
-      );
+      const data = await updateMeasureDao(name, id);
       if (data) {
-        return ReS(res, 200, "Update thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Update khong thanh cong");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -401,15 +312,15 @@ exports.DeleteMeasure = async (req, res) => {
       },
     });
     if (kt) {
-      return ReF(res, 400, "Xoa khong thanh cong, da ton tai");
+      return ReF(res, 200, config.message.DELETE_MEASURE);
     } else {
       const data = await db.Measure.destroy({
         where: { id: id },
       });
       if (data) {
-        return ReS(res, 200, "Xoa thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Xoa khong thanh cong");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -425,5 +336,3 @@ exports.getAllMeasure = async (req, res) => {
     return ReE(res, error);
   }
 };
-
-///

@@ -202,6 +202,20 @@ async function searchOrderDao(condition, page, limit) {
   }
 }
 
+// getOneCustomerById
+async function getOneCustomerById(id) {
+  try {
+    const cus = await db.Customer.findOne({
+      where: {
+        id: id,
+      },
+    });
+    return cus;
+  } catch (error) {
+    `Error: ${error}, traceback at getOneCustomerById function at customer.dao.js file`;
+  }
+}
+
 module.exports = {
   findOneUser,
   findOneUserEmail,
@@ -211,4 +225,5 @@ module.exports = {
   editProfileDao,
   searchCustomerDao,
   searchOrderDao,
+  getOneCustomerById,
 };

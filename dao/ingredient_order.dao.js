@@ -119,6 +119,153 @@ async function UnCancelIngredientOrderByIdDao(id) {
     throw new Error(`${error}, traceback UnCancelIngredientOrderByIdDao()`);
   }
 }
+// findOne ingredient_order_item theo id
+async function getOneIngredientOrderByIdDao(id) {
+  try {
+    const kt = await db.IngredientOrderItem.findAll({
+      where: { ingredient_order_id: id },
+    });
+    return kt;
+  } catch (error) {
+    throw new Error(`${error}, traceback getOneIngredientOrderByIdDao()`);
+  }
+}
+
+// getAll Ingredient_order_item by id
+async function getAllIngredientOrderByIdDao(id) {
+  try {
+    const data = await db.IngredientOrderItem.findAll({
+      where: { ingredient_order_id: id },
+      include: [
+        {
+          model: db.Ingredient,
+          as: "ingredient",
+          attributes: ["name"],
+          include: [{ model: db.Measure, as: "measure", attributes: ["name"] }],
+        },
+
+        {
+          model: db.Ingredient_Order,
+          as: "ingredient_order",
+          include: [
+            {
+              model: db.Staff,
+              as: "staff",
+              attributes: ["fullname"],
+            },
+          ],
+          attributes: ["id"],
+        },
+      ],
+      raw: true,
+    });
+    return data;
+  } catch (error) {
+    throw new Error(`${error}, traceback getAllIngredientOrderByIdDao()`);
+  }
+}
+/// ingredient_order
+
+/// get All ingredient theo tên Staff
+async function getAllIngredientOrderStaff() {
+  try {
+    const data = await db.Ingredient_Order.findAll({
+      include: [
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+      ],
+      raw: true,
+    });
+    return data;
+  } catch (error) {
+    throw new Error(`${error}, traceback getAllIngredientOrderStaff()`);
+  }
+}
+
+// danh sách hóa đơn vật tư đang hoạt động
+async function getAllIngredientOrderStaffTrue() {
+  try {
+    const data = await db.Ingredient_Order.findAll({
+      include: [
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+      ],
+      where: {
+        activate: 0,
+      },
+      raw: true,
+    });
+    return data;
+  } catch (error) {
+    throw new Error(`${error}, traceback getAllIngredientOrderStaffTrue()`);
+  }
+}
+// danh sách hóa đơn vật tư đã bị hủy
+async function getAllIngredientOrderStaffFalse() {
+  try {
+    const data = await db.Ingredient_Order.findAll({
+      include: [
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+      ],
+      where: {
+        activate: 1,
+      },
+      raw: true,
+    });
+    return data;
+  } catch (error) {
+    throw new Error(`${error}, traceback getAllIngredientOrderStaffFalse()`);
+  }
+}
+
+// getOneIngredientOrderByStaffId
+async function getOneIngredientOrderByStaffId(id) {
+  try {
+    const ktstaffin = await db.Ingredient_Order.findOne({
+      where: { staff_id: id },
+    });
+    return ktstaffin;
+  } catch (error) {
+    throw new Error(`${error}, traceback getAllIngredientOrderStaffFalse()`);
+  }
+}
+
+// getAllOrderIngredientStaffDao()
+async function getAllOrderIngredientStaffDao(id) {
+  try {
+    const data = await db.Ingredient_Order.findAll({
+      where: {
+        staff_id: id,
+      },
+      include: [
+        // {
+        //   model: db.Customer,
+        //   as: "customer",
+        //   attributes: ["fullname"],
+        // },
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+      ],
+      raw: true,
+    });
+    return data;
+  } catch (error) {
+    throw new Error(`${error}, traceback getAllOrderIngredientStaffDao()`);
+  }
+}
 module.exports = {
   getOneIngredientByIdDao,
   IngredientImportDao,
@@ -128,4 +275,11 @@ module.exports = {
   getAllIngredientByIdDao,
   CancelIngredientOrderByIdDao,
   UnCancelIngredientOrderByIdDao,
+  getOneIngredientOrderByIdDao,
+  getAllIngredientOrderByIdDao,
+  getAllIngredientOrderStaff,
+  getAllIngredientOrderStaffTrue,
+  getAllIngredientOrderStaffFalse,
+  getOneIngredientOrderByStaffId,
+  getAllOrderIngredientStaffDao,
 };

@@ -112,6 +112,62 @@ async function unLockCustomerDao(id) {
     `Error: ${error}, traceback at unLockCustomerDao function at staff.dao.js file`;
   }
 }
+
+// khóa tài khoản nhân viên
+async function lockAccountStaffDao(id) {
+  try {
+    const staff = await db.Staff.update(
+      {
+        isAcctive: 1,
+      },
+      { where: { id: id } }
+    );
+    return staff;
+  } catch (error) {
+    `Error: ${error}, traceback at lockAccountStaffDao function at staff.dao.js file`;
+  }
+}
+
+//mở khóa tài khoản nhân viên
+async function unLockAccountStaffDao(id) {
+  try {
+    const staff = await db.Staff.update(
+      {
+        isAcctive: 0,
+      },
+      { where: { id: id } }
+    );
+    return staff;
+  } catch (error) {
+    `Error: ${error}, traceback at unLockAccountStaffDao function at staff.dao.js file`;
+  }
+}
+
+// getOneStaffByIdDao
+async function getOneStaffByIdDao(id) {
+  try {
+    const data = await db.Staff.findOne({
+      where: {
+        id: id,
+      },
+    });
+    return data;
+  } catch (error) {
+    `Error: ${error}, traceback at getOneStaffByIdDao function at staff.dao.js file`;
+  }
+}
+
+// xóa tài khoản staff
+async function deleteStaffDao(id) {
+  try {
+    const data = await db.Staff.destroy({
+      where: { id: id },
+    });
+    return data;
+  } catch (error) {
+    `Error: ${error}, traceback at deleteStaffDao function at staff.dao.js file`;
+  }
+}
 module.exports = {
   findOneStaff,
   findOneStaffEmail,
@@ -119,4 +175,8 @@ module.exports = {
   updateProfileByAdminDao,
   unLockCustomerDao,
   lockCustomerDao,
+  unLockAccountStaffDao,
+  lockAccountStaffDao,
+  getOneStaffByIdDao,
+  deleteStaffDao,
 };

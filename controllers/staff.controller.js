@@ -4,14 +4,21 @@ const {
   AcceptOrderDao,
   CancleOrderDao,
   getOrderById,
+  getOneOrdersById,
+  getOneOrdersByStaffId,
+  getAllOrderBusinessDao,
 } = require("../dao/order.dao");
 const {
   createProductdao,
   editProductdao,
   deleteProductdao,
   getProductdao,
+  getOneProductByName,
 } = require("../dao/product.dao");
-const { createRecipe } = require("../dao/recipre.dao");
+const {
+  createRecipe,
+  getAllRecipeIngredientDao,
+} = require("../dao/recipre.dao");
 const { SS, TT, ReS, ReF, ReE, ReT, to } = require("../utils/util.service");
 const db = require("../models");
 const semail = require("../utils/mailer");
@@ -19,15 +26,26 @@ const {
   findOneStaff,
   findOneStaffEmail,
   searchStaffDao,
+  lockAccountStaffDao,
+  unLockAccountStaffDao,
+  updateProfileByAdminDao,
+  getOneStaffByIdDao,
+  deleteStaffDao,
 } = require("../dao/staff.dao");
 const { Op } = require("sequelize");
 const { CheckPhone, CheckEmail } = require("./until.controller");
-const { searchOrderDao } = require("../dao/customer.dao");
+const { searchOrderDao, getOneCustomerById } = require("../dao/customer.dao");
 const {
   ContentActiveAccount_vi,
   ContentOrderTrue,
   ContentOrderFalse,
 } = require("../template/email");
+const config = require("../config/config");
+const { getOneProductById } = require("../dao/order_item.dao");
+const {
+  getOneIngredientOrderByStaffId,
+  getAllOrderIngredientStaffDao,
+} = require("../dao/ingredient_order.dao");
 
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
@@ -36,11 +54,9 @@ exports.createProduct = async (req, res) => {
   try {
     const { name, price, image, descript } = req.body;
     const recipre = req.body.recipre;
-    const kt = await db.Product.findOne({
-      where: { name: name },
-    });
+    const kt = await getOneProductByName(name);
     if (kt) {
-      return ReF(res, 400, "Da ton tai ten san pham");
+      return ReF(res, 200, config.message.PRODUCT_DUPLICATE);
     } else {
       const product = await createProductdao(
         name,
@@ -51,12 +67,9 @@ exports.createProduct = async (req, res) => {
       );
       // const recipe = await createRecipe(recipre);
       if (product) {
-        return ReS(res, 200, "Cap nhat thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return res.status(400).json({
-          success: false,
-          msg: "Loi khong tao thanh cong!",
-        });
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -72,26 +85,17 @@ exports.editProduct = async (req, res) => {
   try {
     const { id } = req.params;
     const { name, price, image, descript } = req.body;
-    const kt = await db.Product.findOne({
-      where: { name: name },
-    });
-    const kt_order = await db.Order_Item.findOne({
-      where: {
-        product_id: id,
-      },
-    });
+    const kt = await getOneProductByName(name);
+    const kt_order = await getOneProductById(id);
 
     if (kt && kt.id != id && kt_order) {
-      return ReF(res, 400, "Da ton tai ten san pham");
+      return ReF(res, 200, config.message.PRODUCT_DUPLICATE);
     } else {
       const product = await editProductdao(id, name, price, image, descript);
       if (product) {
-        return ReS(res, 200, "Cap nhat thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return res.status(400).json({
-          success: false,
-          msg: "Loi khong tao thanh cong!",
-        });
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
     // console.log(id, name, price, image, descript, recipre);
@@ -107,20 +111,20 @@ exports.editProduct = async (req, res) => {
 exports.deleteProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const kt = await db.Order_Item.findOne({
-      where: { product_id: id },
-    });
+    const kt = await getOneProductById(id);
     let product = await getProductdao(id);
     if (!product) {
-      return ReF(res, 400, "Khong ton tai");
+      return ReF(res, 200, config.message.PRODUCT_NONAME);
     } else {
       if (kt) {
-        return ReF(res, 400, "San pham nay da duoc mua");
+        return ReF(res, 200, config.message.PRODUCT_BUY);
       } else {
         const data = await deleteProductdao(id);
-        return res.status(200).json({
-          success: true,
-        });
+        if (data) {
+          return ReS(res, 200, config.message.UPDATE_SUCCESS);
+        } else {
+          return ReF(res, 200, config.message.UPDATE_FALSE);
+        }
       }
     }
   } catch (error) {
@@ -157,14 +161,9 @@ exports.AcceptOrder = async (req, res) => {
     const order = await AcceptOrderDao(id, staff_id);
 
     if (order) {
-      const kt = await db.Orders.findOne({
-        where: { id: id },
-      });
-      const cus = await db.Customer.findOne({
-        where: {
-          id: kt.customer_id,
-        },
-      });
+      const kt = await getOneOrdersById(id);
+      const cus = await getOneCustomerById(kt.customer_id);
+
       to(
         semail.sendMail({
           to: cus.email,
@@ -190,14 +189,8 @@ exports.CancleOrder = async (req, res) => {
 
     const order = await CancleOrderDao(id, staff_id);
     if (order) {
-      const kt = await db.Orders.findOne({
-        where: { id: id },
-      });
-      const cus = await db.Customer.findOne({
-        where: {
-          id: kt.customer_id,
-        },
-      });
+      const kt = await getOneOrdersById(id);
+      const cus = await getOneCustomerById(kt.customer_id);
       to(
         semail.sendMail({
           to: cus.email,
@@ -274,16 +267,11 @@ exports.LockAccount = async (req, res) => {
     // if (ktstaff) {
     //   return ReF(res, 400, "Tai khoan nay da duyet don hang !");
     // } else {
-    const staff = await db.Staff.update(
-      {
-        isAcctive: 0,
-      },
-      { where: { id: id } }
-    );
+    const staff = await lockAccountStaffDao(id);
     if (staff) {
-      return ReS(res, 200, "Successfull !");
+      return ReS(res, 200, config.message.UPDATE_SUCCESS);
     } else {
-      return ReF(res, 400, "Fail!");
+      return ReF(res, 200, config.message.UPDATE_FALSE);
     }
     // }
   } catch (error) {
@@ -297,16 +285,11 @@ exports.UnLockAccount = async (req, res) => {
   try {
     const { id } = req.body;
 
-    const staff = await db.Staff.update(
-      {
-        isAcctive: 1,
-      },
-      { where: { id: id } }
-    );
+    const staff = await unLockAccountStaffDao(id);
     if (staff) {
-      return ReS(res, 200, "Successfull !");
+      return ReS(res, 200, config.message.UPDATE_SUCCESS);
     } else {
-      return ReF(res, 400, "Fail!");
+      return ReF(res, 200, config.message.UPDATE_FALSE);
     }
   } catch (error) {
     return ReE(res, error);
@@ -322,28 +305,24 @@ exports.EditAcount = async (req, res) => {
     const ktphone = await CheckPhone(id, phone);
     const ktemail = await CheckEmail(id, email);
     if (ktphone) {
-      return ReF(res, 400, "Số điện thoại bị trùng !");
+      return ReF(res, 200, config.message.PHONE_DUPLICATE);
     } else if (ktemail) {
-      return ReF(res, 400, "Email bị trùng !");
+      return ReF(res, 200, config.message.EMAIL_DUPLICATE);
     } else {
-      const user = await db.Staff.update(
-        {
-          fullname: fullname,
-          gender: gender,
-          email: email,
-          phone: phone,
-          birthday: birthday,
-          address: address,
-          roleId: roleId,
-        },
-        {
-          where: { id: id },
-        }
+      const user = await updateProfileByAdminDao(
+        fullname,
+        gender,
+        email,
+        phone,
+        birthday,
+        address,
+        roleId,
+        id
       );
       if (user) {
-        return ReS(res, 200, "Cập nhật thành công");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Cập nhật thất bại");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -362,30 +341,24 @@ exports.changePasswordStaff = async (req, res) => {
       !req.body.passwordOld ||
       !req.body.passwordNew
     ) {
-      return ReF(res, 400, "Bạn thiếu field");
+      return ReF(res, 200, config.message.MISSING_DATA_INPUT);
     } else if (req.body.passwordConfirm != req.body.passwordNew) {
-      return ReF(res, 400, "Password mới không hợp lệ");
+      return ReF(res, 200, config.message.CHECK_PASS);
     }
-    const data = await db.Staff.findOne({
-      where: {
-        id: user_id,
-      },
-    });
+    const data = await getOneStaffByIdDao(id);
 
     if (data) {
       const isPassword = bcrypt.hashSync(req.body.passwordOld, data.password);
       // console.log(isPassword);
       if (isPassword != data.password) {
-        return ReF(res, 400, "Update Fail");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       } else {
         data.password = hashPassword(req.body.passwordNew);
         data.save();
-        return ReS(res, 200, {
-          message: "Update Data Success",
-        });
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       }
     }
-    return ReS(res, 404, "Update Data Fail");
+    return ReF(res, 200, config.message.UPDATE_FALSE);
   } catch (error) {
     return ReE(res, error);
   }
@@ -404,7 +377,8 @@ exports.FindAcountStaff = async (req, res) => {
     };
     let response = {};
     if (page || limit || search) {
-      if (!page || !limit) return ReE(res, 400, "Missing Data Field");
+      if (!page || !limit)
+        return ReE(res, 200, config.message.MISSING_DATA_INPUT);
       if (search) {
         condition = {
           ...condition,
@@ -432,23 +406,17 @@ exports.FindAcountStaff = async (req, res) => {
 exports.deleteStaff = async (req, res) => {
   try {
     const { id } = req.params;
-    const ktstaff = await db.Orders.findOne({
-      where: { staff_id: id },
-    });
+    const ktstaff = await getOneOrdersByStaffId(id);
 
-    const ktstaffin = await db.Ingredient_Order.findOne({
-      where: { staff_id: id },
-    });
+    const ktstaffin = await getOneIngredientOrderByStaffId(id);
     if (ktstaff || ktstaffin) {
-      return ReF(res, 400, "Tai khoan nay da duyet don hang !");
+      return ReF(res, 200, config.message.STAFF_ORDER);
     } else {
-      const data = await db.Staff.destroy({
-        where: { id: id },
-      });
+      const data = await deleteStaffDao(id);
       if (data) {
-        return ReS(res, 200, "Da xoa thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 200, "Xoa khong thanh cong");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -467,13 +435,11 @@ exports.deleteStaff = async (req, res) => {
 exports.ViewProfile = async (req, res) => {
   try {
     const { id } = req.params;
-    const ktif = await db.Staff.findOne({
-      where: { id: id },
-    });
+    const ktif = await getOneStaffByIdDao(id);
     if (ktif) {
       return ReT(res, ktif, 200);
     } else {
-      return ReF(res, 400, "Fail !");
+      return ReF(res, 200, config.message.UPDATE_FALSE);
     }
   } catch (error) {
     return ReE(res, error);
@@ -485,18 +451,7 @@ exports.ViewProfile = async (req, res) => {
 exports.GetAllRecipe = async (req, res) => {
   try {
     const { product_id } = req.params;
-    const data = await db.Recipe.findAll({
-      // group: ["product_id"],
-      where: { product_id: product_id },
-      include: [
-        {
-          model: db.Ingredient,
-          as: "ingredient",
-          attributes: ["name"],
-        },
-      ],
-      raw: true,
-    });
+    const data = await getAllRecipeIngredientDao(id);
     return ReT(res, data, 200);
   } catch (error) {
     return ReE(res, error);
@@ -513,24 +468,7 @@ exports.EditRecipe = async (req, res) => {
 exports.getAllOrderBusiness = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = await db.Orders.findAll({
-      where: {
-        staff_id: id,
-      },
-      include: [
-        {
-          model: db.Customer,
-          as: "customer",
-          attributes: ["fullname"],
-        },
-        {
-          model: db.Staff,
-          as: "staff",
-          attributes: ["fullname"],
-        },
-      ],
-      raw: true,
-    });
+    const data = await getAllOrderBusinessDao(id);
     return ReS(res, data, 200);
   } catch (error) {
     return ReE(res, error);
@@ -540,24 +478,7 @@ exports.getAllOrderBusiness = async (req, res) => {
 exports.getAllOrderIngredient = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = await db.Ingredient_Order.findAll({
-      where: {
-        staff_id: id,
-      },
-      include: [
-        // {
-        //   model: db.Customer,
-        //   as: "customer",
-        //   attributes: ["fullname"],
-        // },
-        {
-          model: db.Staff,
-          as: "staff",
-          attributes: ["fullname"],
-        },
-      ],
-      raw: true,
-    });
+    const data = await getAllOrderIngredientStaffDao(id);
     return ReS(res, data, 200);
   } catch (error) {
     return ReE(res, error);

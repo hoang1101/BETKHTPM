@@ -7,6 +7,7 @@ const {
 const { getAllProductdao } = require("../dao/product.dao");
 
 const { ReE, SS } = require("../utils/util.service");
+const { getCustomerOrderTopDao } = require("../dao/statistical.dao");
 
 exports.getAllIngredient = async (req, res) => {
   try {
@@ -111,24 +112,7 @@ exports.statisticalRevenueProductDate = async (req, res) => {
 //  thong ke khach hang top
 exports.getCustomerOrder = async (req, res) => {
   try {
-    const data = await db.Customer.findAll({
-      attributes: [
-        "id",
-        "fullname",
-        [db.sequelize.fn("COUNT", db.sequelize.col("Orders.id")), "orderCount"],
-      ], // Chỉ lấy trường id và name của khách hàng
-      include: [
-        {
-          model: db.Orders,
-          as: "orders",
-          attributes: [],
-        },
-      ],
-      group: ["Customer.id"], // Gom nhóm theo id của khách hàng
-      raw: true, // Trả về dữ liệu dưới dạng plain object
-      nest: true, // Lồng dữ liệu khách hàng trong một object
-      order: [[db.sequelize.literal("orderCount"), "DESC"]], // Sắp xếp giảm dần theo orderCount
-    });
+    const data = await getCustomerOrderTopDao();
 
     return res.status(200).json({
       success: true,

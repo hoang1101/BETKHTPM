@@ -3,12 +3,18 @@ const db = require("../models");
 const { ReS, ReT, ReE, ReF } = require("../utils/util.service");
 const cloudinary = require("cloudinary");
 const moment = require("moment");
+const config = require("../config/config");
+const {
+  createEvaluateNoImgDao,
+  updateEvaluateNoImgDao,
+} = require("../dao/evaluate.dao");
 exports.DanhGiaSanPham = async (req, res) => {
   try {
     const { id_orderitem, customer_id, product_id, start, img, comment } =
       req.body;
 
-    if (!start || !comment) return ReF(res, 400, "Ban thieu Field!");
+    if (!start || !comment)
+      return ReF(res, 200, config.message.MISSING_DATA_INPUT);
     else {
       if (img) {
         let data;
@@ -22,50 +28,31 @@ exports.DanhGiaSanPham = async (req, res) => {
           },
           function (error, result) {}
         );
-        const evaluate = await db.Evaluate.create({
+        const evaluate = await createEvaluateDao(
           id_orderitem,
           customer_id,
           product_id,
           start,
-          img: data.url,
-          comment,
-          date: new Date(
-            moment(
-              new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                new Date().getDate()
-              )
-            ).format("YYYY-MM-DD HH:mm:ss")
-          ),
-        });
+          data.url,
+          comment
+        );
         if (evaluate) {
-          return ReS(res, 200, "Tao thanh cong!");
+          return ReS(res, 200, config.message.UPDATE_SUCCESS);
         } else {
-          return ReF(res, 400, "Tao khong thanh cong!");
+          return ReF(res, 200, config.message.UPDATE_FALSE);
         }
       } else {
-        const evaluate = await db.Evaluate.create({
+        const evaluate = await createEvaluateNoImgDao(
           id_orderitem,
           customer_id,
           product_id,
           start,
-          // img: data.url,
-          comment,
-          date: new Date(
-            moment(
-              new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                new Date().getDate()
-              )
-            ).format("YYYY-MM-DD HH:mm:ss")
-          ),
-        });
+          comment
+        );
         if (evaluate) {
-          return ReS(res, 200, "Tao thanh cong!");
+          return ReS(res, 200, config.message.UPDATE_SUCCESS);
         } else {
-          return ReF(res, 400, "Tao khong thanh cong!");
+          return ReF(res, 200, config.message.UPDATE_FALSE);
         }
       }
     }
@@ -79,7 +66,8 @@ exports.EditDanhGiaSanPham = async (req, res) => {
     const { id } = req.params;
     const { start, img, comment } = req.body;
 
-    if (!start || !comment) return ReS(res, 400, "Ban thieu Field!");
+    if (!start || !comment)
+      return ReS(res, 200, config.message.MISSING_DATA_INPUT);
     else {
       if (img) {
         let data;
@@ -93,36 +81,18 @@ exports.EditDanhGiaSanPham = async (req, res) => {
           },
           function (error, result) {}
         );
-        const evaluate = await db.Evaluate.update(
-          {
-            start,
-            img: data.url,
-            comment,
-          },
-          {
-            where: { id: id },
-          }
-        );
+        const evaluate = await updateEvaluateDao(start, data.url, comment, id);
         if (evaluate) {
-          return ReS(res, 200, "Tao thanh cong!");
+          return ReS(res, 200, config.message.UPDATE_SUCCESS);
         } else {
-          return ReF(res, 400, "Tao khong thanh cong!");
+          return ReF(res, 200, config.message.UPDATE_FALSE);
         }
       } else {
-        const evaluate = await db.Evaluate.update(
-          {
-            start,
-            // img: data.url,
-            comment,
-          },
-          {
-            where: { id: id },
-          }
-        );
+        const evaluate = await updateEvaluateNoImgDao(start, comment, id);
         if (evaluate) {
-          return ReS(res, 200, "Tao thanh cong!");
+          return ReS(res, 200, config.message.UPDATE_SUCCESS);
         } else {
-          return ReF(res, 400, "Tao khong thanh cong!");
+          return ReF(res, 200, config.message.UPDATE_FALSE);
         }
       }
     }

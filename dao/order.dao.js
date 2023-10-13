@@ -199,6 +199,57 @@ async function CustomerCancleOrderDao(id) {
     throw new Error(`${error}, traceback CustomerCancleOrderDao()`);
   }
 }
+
+// tìm kiếm đơn hàng
+async function getOneOrdersById(id) {
+  try {
+    const kt = await db.Orders.findOne({
+      where: { id: id },
+    });
+    return kt;
+  } catch (error) {
+    throw new Error(`${error}, traceback getOneOrdersById()`);
+  }
+}
+
+///getOneOrdersByStaffId
+async function getOneOrdersByStaffId() {
+  try {
+    const ktstaff = await db.Orders.findOne({
+      where: { staff_id: id },
+    });
+    return ktstaff;
+  } catch (error) {
+    throw new Error(`${error}, traceback getOneOrdersByStaffId()`);
+  }
+}
+
+//getAllOrderBusinessDao
+async function getAllOrderBusinessDao(id) {
+  try {
+    const data = await db.Orders.findAll({
+      where: {
+        staff_id: id,
+      },
+      include: [
+        {
+          model: db.Customer,
+          as: "customer",
+          attributes: ["fullname"],
+        },
+        {
+          model: db.Staff,
+          as: "staff",
+          attributes: ["fullname"],
+        },
+      ],
+      raw: true,
+    });
+    return data;
+  } catch (error) {
+    throw new Error(`${error}, traceback getAllOrderBusinessDao()`);
+  }
+}
 module.exports = {
   createOrderDao,
   AllOrderDao,
@@ -206,4 +257,7 @@ module.exports = {
   CancleOrderDao,
   getOrderById,
   CustomerCancleOrderDao,
+  getOneOrdersById,
+  getOneOrdersByStaffId,
+  getAllOrderBusinessDao,
 };

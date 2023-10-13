@@ -1,8 +1,14 @@
 const { Op } = require("sequelize");
-const { getAllProductdao, searchProductDao } = require("../dao/product.dao");
+const {
+  getAllProductdao,
+  searchProductDao,
+  lockProductDao,
+  unLockProductdao,
+} = require("../dao/product.dao");
 const { getRecipreByIdDao, UpdateRecipeDao } = require("../dao/recipre.dao");
 const { SS, ReE, TT, ReS } = require("../utils/util.service");
 const db = require("../models");
+const config = require("../config/config");
 exports.getAllProduct = async (req, res) => {
   try {
     const data = await getAllProductdao();
@@ -24,7 +30,7 @@ exports.getRecipreById = async (req, res) => {
 exports.updateRecipe = async (req, res) => {
   try {
     const { product_id } = req.params;
-    console.log(product_id);
+    // console.log(product_id);
     const recipe = req.body.recipe;
     const dataupdate = await UpdateRecipeDao(product_id, recipe);
     return SS(res, dataupdate);
@@ -45,7 +51,8 @@ exports.SearchProduct = async (req, res) => {
     let response = {};
     let counts = 0;
     if (page || limit || search) {
-      if (!page || !limit) return ReE(res, 400, "Missing Data Field");
+      if (!page || !limit)
+        return ReE(res, 200, config.message.MISSING_DATA_INPUT);
       if (search) {
         condition = {
           ...condition,
@@ -81,20 +88,11 @@ exports.SearchProduct = async (req, res) => {
 exports.LockProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = await db.Product.update(
-      {
-        activate: 0,
-      },
-      {
-        where: {
-          id: id,
-        },
-      }
-    );
+    const data = await lockProductDao(id);
     if (data) {
-      return ReS(res, 200, "Da xoa thanh cong");
+      return ReS(res, 200, config.message.UPDATE_SUCCESS);
     } else {
-      return ReF(res, 200, "Xoa khong thanh cong");
+      return ReF(res, 200, config.message.UPDATE_FALSE);
     }
   } catch (error) {
     return ReE(res, error);
@@ -104,20 +102,11 @@ exports.LockProduct = async (req, res) => {
 exports.UnLockProduct = async (req, res) => {
   try {
     const { id } = req.params;
-    const data = await db.Product.update(
-      {
-        activate: 1,
-      },
-      {
-        where: {
-          id: id,
-        },
-      }
-    );
+    const data = await unLockProductdao(id);
     if (data) {
-      return ReS(res, 200, "Da xoa thanh cong");
+      return ReS(res, 200, config.message.UPDATE_SUCCESS);
     } else {
-      return ReF(res, 200, "Xoa khong thanh cong");
+      return ReF(res, 200, config.message.UPDATE_FALSE);
     }
   } catch (error) {
     return ReE(res, error);

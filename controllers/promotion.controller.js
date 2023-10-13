@@ -2,6 +2,17 @@ const db = require("../models");
 const moment = require("moment");
 const { ReS, ReE, ReF, ReT } = require("../utils/util.service");
 const { Op } = require("sequelize");
+const config = require("../config/config");
+const {
+  createPromotionDao,
+  getOnePromotionById,
+  editPromotionDao,
+  getOnePromotionByIdDao,
+  deletePromotionDao,
+  getAllPromotionNowDao,
+  getAllPromotionEndDao,
+  getAllPromotionRegisterDao,
+} = require("../dao/promotion.dao");
 
 exports.CreatePromotion = async (req, res) => {
   try {
@@ -33,22 +44,12 @@ exports.CreatePromotion = async (req, res) => {
     //   ) {
     let data;
     for (let i of arr) {
-      data = await db.Promotion.create({
-        product_id: i,
-        staff_id: staff_id,
-        percent: percent,
-        start_day: new Date(
-          moment(new Date(start_day)).format("YYYY-MM-DD HH:mm:ss")
-        ),
-        end_day: new Date(
-          moment(new Date(end_day)).format("YYYY-MM-DD HH:mm:ss")
-        ),
-      });
+      data = await createPromotionDao(i, staff_id, percent, start_day, end_day);
     }
     if (data) {
-      return ReS(res, 200, "Tao thanh cong");
+      return ReS(res, 200, config.message.UPDATE_SUCCESS);
     } else {
-      return ReF(res, 400, "Tao khong thanh cong");
+      return ReF(res, 200, config.message.UPDATE_FALSE);
     }
     // } else {
     //   return ReF(res, 400, "Dang ton tai ma giam gia!");
@@ -75,9 +76,7 @@ exports.CreatePromotion = async (req, res) => {
 exports.editPromotion = async (req, res) => {
   try {
     const { id, product_id, staff_id, percent, start_day, end_day } = req.body;
-    const kt = await db.Promotion.findOne({
-      where: { id: id },
-    });
+    const kt = await getOnePromotionByIdDao(id);
     if (
       kt.start_day >
       new Date(
@@ -90,27 +89,21 @@ exports.editPromotion = async (req, res) => {
         ).format("YYYY-MM-DD")
       )
     ) {
-      const data = await db.Promotion.update(
-        {
-          product_id: product_id,
-          staff_id: staff_id,
-          percent: percent,
-          start_day: new Date(moment(new Date(start_day)).format("YYYY-MM-DD")),
-          end_day: new Date(moment(new Date(end_day)).format("YYYY-MM-DD")),
-        },
-        {
-          where: {
-            id: id,
-          },
-        }
+      const data = await editPromotionDao(
+        product_id,
+        staff_id,
+        percent,
+        start_day,
+        end_day,
+        id
       );
       if (data) {
-        return ReS(res, 200, "Update thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Update khong thanh cong");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     } else {
-      return ReF(res, 400, "Ma khuyen mai nay da duoc su dung ");
+      return ReF(res, 200, config.message.PROMOTION_DUPLICATE);
     }
   } catch (error) {
     return ReE(res, error);
@@ -121,9 +114,7 @@ exports.editPromotion = async (req, res) => {
 exports.deletePromotion = async (req, res) => {
   try {
     const { id } = req.params;
-    const kt = await db.Promotion.findOne({
-      where: { id: id },
-    });
+    const kt = await getOnePromotionByIdDao(id);
     if (
       kt.start_day >
       new Date(
@@ -136,16 +127,14 @@ exports.deletePromotion = async (req, res) => {
         ).format("YYYY-MM-DD")
       )
     ) {
-      const data = await db.Promotion.destroy({
-        where: { id: id },
-      });
+      const data = await deletePromotionDao(id);
       if (data) {
-        return ReS(res, 200, "Xoa thanh cong");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Xoa khong thanh cong");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     } else {
-      return ReF(res, 400, "Ma khuyen mai nay da duoc su dung ");
+      return ReF(res, 200, config.message.PROMOTION_DUPLICATE);
     }
   } catch (error) {
     return ReE(res, error);
@@ -154,34 +143,7 @@ exports.deletePromotion = async (req, res) => {
 
 exports.GetAllPromotionNow = async (req, res) => {
   try {
-    const data = await db.Promotion.findAll({
-      include: [
-        {
-          model: db.Product,
-          as: "product",
-          attributes: ["name"],
-        },
-        {
-          model: db.Staff,
-          as: "staff",
-          attributes: ["fullname"],
-        },
-      ],
-      raw: true,
-      where: {
-        end_day: {
-          [Op.gte]: new Date(
-            moment(
-              new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                new Date().getDate()
-              )
-            ).format("YYYY-MM-DD")
-          ),
-        },
-      },
-    });
+    const data = await getAllPromotionNowDao();
     return ReT(res, data, 200);
   } catch (error) {
     return ReE(res, error);
@@ -190,34 +152,7 @@ exports.GetAllPromotionNow = async (req, res) => {
 
 exports.GetAllPromotionEnd = async (req, res) => {
   try {
-    const data = await db.Promotion.findAll({
-      include: [
-        {
-          model: db.Product,
-          as: "product",
-          attributes: ["name"],
-        },
-        {
-          model: db.Staff,
-          as: "staff",
-          attributes: ["fullname"],
-        },
-      ],
-      raw: true,
-      where: {
-        end_day: {
-          [Op.lt]: new Date(
-            moment(
-              new Date(
-                new Date().getFullYear(),
-                new Date().getMonth(),
-                new Date().getDate()
-              )
-            ).format("YYYY-MM-DD")
-          ),
-        },
-      },
-    });
+    const data = await getAllPromotionEndDao();
     return ReT(res, data, 200);
   } catch (error) {
     return ReE(res, error);
@@ -226,41 +161,7 @@ exports.GetAllPromotionEnd = async (req, res) => {
 
 exports.GetAllPromotionRegister = async (req, res) => {
   try {
-    const data1 = await db.Product.findAll({
-      include: [
-        {
-          model: db.Promotion,
-          as: "promotion",
-        },
-      ],
-      where: {
-        "$promotion.product_id$": null,
-      },
-    });
-
-    const data = await db.Product.findAll({
-      include: [
-        {
-          model: db.Promotion,
-          as: "promotion",
-          attributes: [],
-          where: {
-            end_day: {
-              [Op.lt]: new Date(
-                moment(
-                  new Date(
-                    new Date().getFullYear(),
-                    new Date().getMonth(),
-                    new Date().getDate()
-                  )
-                ).format("YYYY-MM-DD")
-              ),
-            },
-          },
-        },
-      ],
-    });
-    let kt = [...data, ...data1];
+    const data1 = await getAllPromotionRegisterDao();
     return ReT(res, kt, 200);
   } catch (error) {
     return ReE(res, error);

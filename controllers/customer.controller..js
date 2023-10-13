@@ -12,6 +12,9 @@ const {
   CheckPhoneCustomer,
   CheckEmailCustomer,
 } = require("./until.controller");
+const config = require("../config/config");
+const { getAllIngredientDao } = require("../dao/ingredient.dao");
+const { getAllRecipeDao } = require("../dao/recipre.dao");
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 const checkOut = async (req, res) => {
@@ -21,11 +24,9 @@ const checkOut = async (req, res) => {
     action = await orderDao.createOrderDao(data, address);
 
     if (action) {
+      return ReS(res, 200, config.message.ORDER_SUCCESS);
     }
-    res.status(200).json({
-      success: true,
-      msg: "hihi",
-    });
+    return ReF(res, 200, config.message.ORDER_FALSE);
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -73,28 +74,23 @@ const editProfile = async (req, res) => {
     const kt = await CheckPhoneCustomer(id, phone);
     const ktemail = await CheckEmailCustomer(id, email);
     if (kt) {
-      return ReF(res, 400, "Số điện thoại bị trùng !");
+      return ReF(res, 200, config.message.PHONE_DUPLICATE);
     } else if (ktemail) {
-      return ReF(res, 400, "Email bị trùng !");
+      return ReF(res, 200, config.message.EMAIL_DUPLICATE);
     } else {
-      const user = await db.Customer.update(
-        {
-          fullname: fullname,
-          gender: gender,
-          email: email,
-          phone: phone,
-          birthday: birthday,
-          address: address,
-        },
-        {
-          where: { id: id },
-        }
+      const user = await editProfileDao(
+        id,
+        fullname,
+        email,
+        phone,
+        address,
+        gender,
+        birthday
       );
-
       if (user) {
-        return ReS(res, 200, "Update successfull");
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       } else {
-        return ReF(res, 400, "Update Fail");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       }
     }
   } catch (error) {
@@ -111,9 +107,9 @@ const changePassword = async (req, res) => {
       !req.body.passwordOld ||
       !req.body.passwordNew
     ) {
-      return ReF(res, 400, "Bạn thiếu field");
+      return ReF(res, 200, config.message.MISSING_DATA_INPUT);
     } else if (req.body.passwordConfirm != req.body.passwordNew) {
-      return ReF(res, 400, "Password mới không hợp lệ");
+      return ReF(res, 200, config.message.CHECK_PASS);
     }
     const data = await db.Customer.findOne({
       where: {
@@ -125,16 +121,14 @@ const changePassword = async (req, res) => {
       const isPassword = bcrypt.hashSync(req.body.passwordOld, data.password);
       // console.log(isPassword);
       if (isPassword != data.password) {
-        return ReF(res, 400, "Update Fail");
+        return ReF(res, 200, config.message.UPDATE_FALSE);
       } else {
         data.password = hashPassword(req.body.passwordNew);
         data.save();
-        return ReS(res, 200, {
-          message: "Update Data Success",
-        });
+        return ReS(res, 200, config.message.UPDATE_SUCCESS);
       }
     }
-    return ReS(res, 404, "Update Data Fail");
+    return ReF(res, 200, config.message.UPDATE_FALSE);
   } catch (error) {
     return ReE(res, error);
   }
@@ -150,7 +144,7 @@ const ViewProfileCustomer = async (req, res) => {
     if (ktif) {
       return ReT(res, ktif, 200);
     } else {
-      return ReF(res, 400, "Fail !");
+      return ReF(res, 200, config.message.UPDATE_FALSE);
     }
   } catch (error) {
     return ReE(res, error);
@@ -162,12 +156,10 @@ const checkIngredient = async (req, res) => {
     data = req.body.data;
 
     // lay ra danh sach cac nguyen lieu trong cua hang
-    const ingredient = await db.Ingredient.findAll({});
+    const ingredient = await getAllIngredientDao();
     let KQ = {};
     for (let i of data) {
-      const recipe = await db.Recipe.findAll({
-        where: { product_id: i.id },
-      });
+      const recipe = await getAllRecipeDao(i.id);
       for (let j of recipe) {
         if (KQ[j.ingredient_id]) {
           KQ[j.ingredient_id] += j.quantity * i.quantity;
@@ -177,16 +169,16 @@ const checkIngredient = async (req, res) => {
       }
     }
     let j = 0;
-    console.log(KQ);
+    // console.log(KQ);
     for (let i of ingredient) {
       if (KQ[i.id]) {
-        console.log(i.quantity, KQ[i.id]);
+        // console.log(i.quantity, KQ[i.id]);
         if (i.quantity - KQ[i.id] < 0) {
-          return ReF(res, 400, "Đã hết nguyên liệu! ");
+          return ReF(res, 200, config.message.INGREDIENT_CHECK);
         }
       }
     }
-    return ReS(res, 200, "Thêm sản phẩm thành công");
+    return ReS(res, 200, config.message.INGREDIENT_CHECK_TRUE);
   } catch (error) {
     return ReE(res, error);
   }

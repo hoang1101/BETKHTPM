@@ -61,4 +61,22 @@ async function statisticalProductDaoDate(date_, date__) {
   }
 }
 
-module.exports = { statisticalProductDao, statisticalProductDaoDate };
+// tìm kiếm sản phẩm
+async function getOneProductById(id) {
+  try {
+    const kt_order = await db.Order_Item.findOne({
+      where: {
+        product_id: id,
+      },
+    });
+    return kt_order;
+  } catch (error) {
+    throw new Error(`${error}, traceback getOneProductById()`);
+  }
+}
+
+module.exports = {
+  statisticalProductDao,
+  statisticalProductDaoDate,
+  getOneProductById,
+};

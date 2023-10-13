@@ -207,7 +207,54 @@ async function searchProductDao(condition, page, limit) {
   }
 }
 
-//
+//locck Product
+
+async function lockProductDao(id) {
+  try {
+    const data = await db.Product.update(
+      {
+        activate: 1,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    throw new Error(`${error}, traceback lockProductDao()`);
+  }
+}
+// unlockproduct
+async function unLockProductdao(id) {
+  try {
+    const data = await db.Product.update(
+      {
+        activate: 0,
+      },
+      {
+        where: {
+          id: id,
+        },
+      }
+    );
+    return data;
+  } catch (error) {
+    throw new Error(`${error}, traceback unLockProductdao()`);
+  }
+}
+// getOneProductByName
+async function getOneProductByName(name) {
+  try {
+    const kt = await db.Product.findOne({
+      where: { name: name },
+    });
+    return kt;
+  } catch (error) {
+    throw new Error(`${error}, traceback getOneProductByName()`);
+  }
+}
 
 module.exports = {
   getAllProductdao,
@@ -216,4 +263,7 @@ module.exports = {
   deleteProductdao,
   getProductdao,
   searchProductDao,
+  lockProductDao,
+  unLockProductdao,
+  getOneProductByName,
 };
