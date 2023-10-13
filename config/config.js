@@ -33,5 +33,28 @@ module.exports = {
     MISSING_DATA_INPUT:
       "Trường dữ liệu bị thiếu. Vui lòng điền đầy đủ thông tin.",
     // customer controller
+    ORDER_SUCCESS: "Bạn đã đặt đơn hàng thành công",
+    ORDER_FALSE: "Bạn đã đặt đơn hàng không thành công",
+    CHECK_PASS: "Mật khẩu mới của bạn không hợp lệ.",
+    INGREDIENT_CHECK: "Đã hết nguyên liệu",
+    INGREDIENT_CHECK_TRUE: "Thêm sản phẩm vào giỏ hàng thành công.",
+    // ingredient
+    INGREDIENT_QUANTITY:
+      "Số lượng nguyên liệu trong kho đã sử dụng không thể hủy hóa đơn.",
+    INGREDIENT_DUPLICATE: "Nguyên liệu này đã tồn tại.",
+    DELETE_ERROR: "Xóa không thành công, đã tồn tại hóa đơn.",
+    // measure
+    MEASURE_DUPLICATE: "Tên đơn vị nguyên liệu này đã tồn tại.",
+    DELETE_MEASURE: "Xóa không thành công, đã tồn tại.",
+    // promotion
+    PROMOTION_DUPLICATE: "Mã khuyến mãi này đã được sử dụng.",
+    // role
+    ROLE_ERROR: "Thực hiện không thành công. Vui lòng kiểm tra thông tin.",
+    // product
+    PRODUCT_DUPLICATE: "Tên sản phẩm này đã tồn tại.",
+    PRODUCT_NONAME: "Sản phẩm này không tồn tại.",
+    PRODUCT_BUY: "Sản phẩm này đã được đặt hàng.",
+    //staff
+    STAFF_ORDER: "Tài khoản này đã duyệt đơn hàng.",
   },
 };
