@@ -107,7 +107,25 @@ async function createProductdao(name, price, image, descript, recipre) {
     throw new Error(`${error}, traceback createProduct()`);
   }
 }
+async function getPriceRecipe(recipre) {
+  try {
+    const ingredient = await db.Ingredient.findAll({
+      attributes: ["id", "capital_price"],
+    });
 
+    let countPrice = 0;
+    const price = (id) => {
+      return ingredient.filter((e) => {
+        return e.id === id;
+      });
+    };
+    recipre.forEach((element) => {
+      countPrice += price(element.id)[0].capital_price * element.count;
+    });
+
+    return countPrice;
+  } catch (error) {}
+}
 async function editProductdao(id, name, price, image, descript, recipre) {
   try {
     if (image) {
@@ -266,4 +284,5 @@ module.exports = {
   lockProductDao,
   unLockProductdao,
   getOneProductByName,
+  getPriceRecipe,
 };

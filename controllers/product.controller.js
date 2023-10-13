@@ -4,9 +4,10 @@ const {
   searchProductDao,
   lockProductDao,
   unLockProductdao,
+  getPriceRecipe,
 } = require("../dao/product.dao");
 const { getRecipreByIdDao, UpdateRecipeDao } = require("../dao/recipre.dao");
-const { SS, ReE, TT, ReS } = require("../utils/util.service");
+const { SS, ReE, TT, ReS, ReF } = require("../utils/util.service");
 const db = require("../models");
 const config = require("../config/config");
 exports.getAllProduct = async (req, res) => {
@@ -105,6 +106,21 @@ exports.UnLockProduct = async (req, res) => {
     const data = await unLockProductdao(id);
     if (data) {
       return ReS(res, 200, config.message.UPDATE_SUCCESS);
+    } else {
+      return ReF(res, 200, config.message.UPDATE_FALSE);
+    }
+  } catch (error) {
+    return ReE(res, error);
+  }
+};
+
+exports.PriceRecipe = async (req, res) => {
+  try {
+    const list = req.body;
+    const data = await getPriceRecipe(list);
+
+    if (data) {
+      return SS(res, { price: data });
     } else {
       return ReF(res, 200, config.message.UPDATE_FALSE);
     }
