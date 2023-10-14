@@ -17,7 +17,7 @@ async function createOrderDao(data, address) {
             new Date().getMonth(),
             new Date().getDate()
           )
-        ).format("YYYY-MM-DD HH:mm:ss")
+        ).format("YYYY-MM-DD")
       ),
     });
     for (let i of data) {
@@ -26,6 +26,7 @@ async function createOrderDao(data, address) {
         product_id: i.idPro,
         quantity: i.qty,
         price: i.price,
+        capital_price: i.capital_price,
       });
     }
 
@@ -51,6 +52,10 @@ async function createOrderDao(data, address) {
         }
       }
     }
+
+    if (order) {
+      return true;
+    } else return false;
   } catch (err) {
     throw new Error(`${err}, traceback createOrderDao()`);
   }
