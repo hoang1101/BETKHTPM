@@ -91,6 +91,7 @@ async function getAllIngredientMeasureDao() {
 
 module.exports = {
   getAllIngredientInDayDao,
+  getAllIngredientMeasureDao,
   getAllIngredientDao,
   getIngredientByNameDao,
   createIngredientDao,
