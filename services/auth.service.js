@@ -38,7 +38,7 @@ exports.registerService = ({
           address,
           gender,
           birthday,
-          issAcctive: 1,
+          isAcctive: 0,
         },
       });
 
@@ -98,7 +98,7 @@ exports.registerServiceStaff = ({
           roleId,
           gender,
           birthday,
-          issAcctive: 1,
+          isAcctive: 0,
         },
       });
 
@@ -131,7 +131,7 @@ exports.loginService = ({ phone, password }) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await findOneUser(phone);
-      if (response.issAcctive === 0) {
+      if (response.isAcctive === 1) {
         return ReF(res, 200, config.message.LOCK_LOGIN);
       }
       const isCorrect =
@@ -168,7 +168,7 @@ exports.loginServiceStaff = ({ phone, password }) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await findOneStaff(phone);
-      if (response.issAcctive === 0) {
+      if (response.isAcctive === 1) {
         return ReF(res, 200, config.message.LOCK_LOGIN);
       }
       const isCorrect =

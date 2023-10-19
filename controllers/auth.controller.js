@@ -69,6 +69,11 @@ exports.loginStaff = async (req, res) => {
 
     const customer = await findOneStaff(phone);
 
+    const response1 = await findOneStaff(phone);
+    if (response1.isAcctive === 1) {
+      return ReF(res, 200, config.message.LOCK_LOGIN);
+    }
+
     const response = await authController.loginServiceStaff(req.body);
     const token = response.token;
     const mgs = response.msg;
