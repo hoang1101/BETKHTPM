@@ -6,6 +6,7 @@ const { findOneUser } = require("../dao/customer.dao");
 const { findOneStaff } = require("../dao/staff.dao");
 const { ReF } = require("../utils/util.service");
 const config = require("../config/config");
+const { CheckEmailRegisterStaff } = require("../controllers/until.controller");
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 

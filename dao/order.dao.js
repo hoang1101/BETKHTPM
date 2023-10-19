@@ -218,7 +218,7 @@ async function getOneOrdersById(id) {
 }
 
 ///getOneOrdersByStaffId
-async function getOneOrdersByStaffId() {
+async function getOneOrdersByStaffId(id) {
   try {
     const ktstaff = await db.Orders.findOne({
       where: { staff_id: id },

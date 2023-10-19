@@ -12,6 +12,10 @@ const {
   ContentActiveAccountOTP,
 } = require("../template/email");
 const config = require("../config/config");
+const {
+  CheckEmailRegisterStaff,
+  CheckPhoneRegisterStaff,
+} = require("./until.controller");
 const hashPassword = (MatKhau) =>
   bcrypt.hashSync(MatKhau, bcrypt.genSaltSync(12));
 
@@ -221,6 +225,15 @@ exports.registerStaff = async (req, res) => {
     // roleId
     if (!roleId) return ReF(res, 200, config.message.SIGNUP_ROLEID_ERROR);
 
+    const checkEmail = await CheckEmailRegisterStaff(email);
+    if (checkEmail) {
+      return ReF(res, 200, config.message.EMAIL_DUPLICATE);
+    }
+    const CheckPhone = await CheckPhoneRegisterStaff(phone);
+    if (CheckPhone) {
+      return ReF(res, 200, config.message.PHONE_DUPLICATE);
+    }
+
     const response = await authController.registerServiceStaff(req.body);
 
     if (response.success === true) {
@@ -234,7 +247,7 @@ exports.registerStaff = async (req, res) => {
       return res.status(200).json({
         success: true,
         response,
-        message: config.message.REGISTER_SUCCESS_ST,
+        msg: config.message.REGISTER_SUCCESS_ST,
       });
     } else {
       return ReF(res, 200, config.message.REGISTER_E001);
