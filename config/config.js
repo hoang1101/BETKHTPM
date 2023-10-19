@@ -36,8 +36,8 @@ module.exports = {
     ORDER_SUCCESS: "Bạn đã đặt đơn hàng thành công",
     ORDER_FALSE: "Bạn đã đặt đơn hàng không thành công",
     CHECK_PASS: "Mật khẩu mới của bạn không hợp lệ.",
-    INGREDIENT_CHECK: "Đã hết nguyên liệu",
-    INGREDIENT_CHECK_TRUE: "Thêm sản phẩm vào giỏ hàng thành công.",
+    VALIDATION_ERROR_E002: "Sản phẩm không còn đủ nguyên liệu",
+    VALIDATION_SUCCES_E001: "Thêm sản phẩm vào giỏ hàng thành công.",
     // ingredient
     INGREDIENT_QUANTITY:
       "Số lượng nguyên liệu trong kho đã sử dụng không thể hủy hóa đơn.",

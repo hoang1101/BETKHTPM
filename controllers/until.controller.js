@@ -9,6 +9,7 @@ async function CheckPhone(id, phone) {
         phone,
       },
     });
+    console.log(response1);
     if (response1) {
       if (response1.id == id) {
         return false;
@@ -80,9 +81,45 @@ async function CheckEmailCustomer(id, email) {
   }
 }
 
+async function CheckEmailRegisterStaff(email) {
+  try {
+    const response1 = await db.Staff.findOne({
+      where: {
+        email,
+      },
+    });
+    if (response1) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    throw new Error(`${error}, traceback CheckEmailRegisterStaff()`);
+  }
+}
+
+async function CheckPhoneRegisterStaff(phone) {
+  try {
+    const response1 = await db.Staff.findOne({
+      where: {
+        phone,
+      },
+    });
+    if (response1) {
+      return true;
+    } else {
+      return false;
+    }
+  } catch (error) {
+    throw new Error(`${error}, traceback CheckPhoneRegisterStaff()`);
+  }
+}
+
 module.exports = {
   CheckPhone,
   CheckEmail,
   CheckEmailCustomer,
   CheckPhoneCustomer,
+  CheckEmailRegisterStaff,
+  CheckPhoneRegisterStaff,
 };

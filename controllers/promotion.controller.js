@@ -162,7 +162,7 @@ exports.GetAllPromotionEnd = async (req, res) => {
 exports.GetAllPromotionRegister = async (req, res) => {
   try {
     const data1 = await getAllPromotionRegisterDao();
-    return ReT(res, kt, 200);
+    return ReT(res, data1, 200);
   } catch (error) {
     return ReE(res, error);
   }

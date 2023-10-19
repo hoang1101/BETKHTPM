@@ -175,6 +175,7 @@ module.exports = {
   updateProfileByAdminDao,
   unLockCustomerDao,
   lockCustomerDao,
+
   unLockAccountStaffDao,
   lockAccountStaffDao,
   getOneStaffByIdDao,

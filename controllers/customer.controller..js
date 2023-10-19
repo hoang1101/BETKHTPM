@@ -174,11 +174,11 @@ const checkIngredient = async (req, res) => {
       if (KQ[i.id]) {
         // console.log(i.quantity, KQ[i.id]);
         if (i.quantity - KQ[i.id] < 0) {
-          return ReF(res, 200, config.message.INGREDIENT_CHECK);
+          return ReF(res, 200, config.message.VALIDATION_ERROR_E002);
         }
       }
     }
-    return ReS(res, 200, config.message.INGREDIENT_CHECK_TRUE);
+    return ReS(res, 200, config.message.VALIDATION_SUCCES_E001);
   } catch (error) {
     return ReE(res, error);
   }

@@ -10,6 +10,9 @@ const {
   UnCancelIngredientOrderByIdDao,
   getAllIngredientOrderStaffTrue,
   getAllIngredientOrderStaffFalse,
+  getOneIngredientOrderByIdDao,
+  getAllIngredientOrderByIdDao,
+  getAllIngredientOrderStaff,
 } = require("../dao/ingredient_order.dao");
 const { ReE, ReF, ReS, ReT } = require("../utils/util.service");
 const { Op } = require("sequelize");
@@ -21,6 +24,7 @@ const {
   createIngredientDao,
   updateIngredientDao,
   deleteIngredientDao,
+  getAllIngredientMeasureDao,
 } = require("../dao/ingredient.dao");
 const {
   getOneMeasure,
@@ -200,7 +204,7 @@ exports.DeleteIngredient = async (req, res) => {
   try {
     const { id } = req.params;
     const kt = await getOneIngredientOrderByIdDao(id);
-    if (kt) {
+    if (kt != 0) {
       return ReF(res, 200, config.message.DELETE_ERROR);
     } else {
       const data = await deleteIngredientDao(id);

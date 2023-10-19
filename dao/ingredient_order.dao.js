@@ -123,7 +123,7 @@ async function UnCancelIngredientOrderByIdDao(id) {
 async function getOneIngredientOrderByIdDao(id) {
   try {
     const kt = await db.IngredientOrderItem.findAll({
-      where: { ingredient_order_id: id },
+      where: { ingredient_id: id },
     });
     return kt;
   } catch (error) {
@@ -276,7 +276,6 @@ module.exports = {
   CancelIngredientOrderByIdDao,
   UnCancelIngredientOrderByIdDao,
   getOneIngredientOrderByIdDao,
-  getAllIngredientOrderByIdDao,
   getAllIngredientOrderStaff,
   getAllIngredientOrderStaffTrue,
   getAllIngredientOrderStaffFalse,

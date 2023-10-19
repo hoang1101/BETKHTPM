@@ -25,3 +25,19 @@ exports.getRoleById = async (req, res) => {
     return ReE(res, error);
   }
 };
+
+const moment = require("moment");
+
+exports.CheckDate = async (req, res) => {
+  try {
+    var moment = require("moment");
+    var ngayGioHienTai = moment(); // Tạo một đối tượng Moment hiện tại
+    console.log(
+      "Ngày và giờ hiện tại: " + ngayGioHienTai.format("YYYY-MM-DD HH:mm:ss")
+    );
+    console.log(data);
+    return ReT(res, data, 200);
+  } catch (error) {
+    return ReE(res, error);
+  }
+};

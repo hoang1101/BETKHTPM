@@ -284,7 +284,6 @@ exports.LockAccount = async (req, res) => {
 exports.UnLockAccount = async (req, res) => {
   try {
     const { id } = req.body;
-
     const staff = await unLockAccountStaffDao(id);
     if (staff) {
       return ReS(res, 200, config.message.UPDATE_SUCCESS);
@@ -406,6 +405,7 @@ exports.FindAcountStaff = async (req, res) => {
 exports.deleteStaff = async (req, res) => {
   try {
     const { id } = req.params;
+    console.log(id);
     const ktstaff = await getOneOrdersByStaffId(id);
 
     const ktstaffin = await getOneIngredientOrderByStaffId(id);
