@@ -2,10 +2,12 @@ const querystring = require("qs");
 const crypto = require("crypto");
 var config = require("config");
 const moment = require("moment");
-
+const orderDao = require("../dao/order.dao");
+let dataOrder = {};
 exports.vnpay = async (req, res) => {
   var date = new Date();
-  const amount = 10000;
+  dataOrder = req.body;
+  const amount = req.body.prize;
   const createDate = moment(date).format("YYYYMMDDHHmmss");
   const bill_id = moment(date).format("DDHHmmss");
 
@@ -31,7 +33,7 @@ exports.vnpay = async (req, res) => {
   vnp_Params["vnp_OrderType"] = 110000;
   vnp_Params["vnp_Amount"] = amount * 100;
   // vnp_Params['vnp_ReturnUrl'] = `${req.protocol}://${req.hostname}/api/bill/vnpay_ipn`;
-  vnp_Params["vnp_ReturnUrl"] = `http://localhost:3000/api/v1/customer/return`;
+  vnp_Params["vnp_ReturnUrl"] = "http://localhost:3000/api/v1/customer/return";
   vnp_Params["vnp_IpAddr"] = ipAddr;
   vnp_Params["vnp_CreateDate"] = createDate;
 
@@ -97,13 +99,17 @@ exports.vnpay_return = async (req, res) => {
     if (secureHash === signed) {
       var orderId = vnp_Params["vnp_TxnRef"];
       var rspCode = vnp_Params["vnp_ResponseCode"];
-      res.status(301).redirect("http://localhost:3001/ThanhCong");
-      res.status(200).json({ RspCode: "00", Message: "success" });
+      if (rspCode === "00") {
+        await orderDao.createOrderDao(dataOrder.data, dataOrder.address);
+        res.status(301).redirect(`http://localhost:3001/ThanhCong/${rspCode}`);
+      } else {
+        res.status(301).redirect(`http://localhost:3001/Cart`);
+      }
     } else {
       res.status(200).json({ RspCode: "97", Message: "Fail checksum" });
     }
   } catch (err) {
-    console.log(err);
+    // console.log(err);
   }
 };
 
