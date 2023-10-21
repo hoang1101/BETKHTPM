@@ -131,9 +131,7 @@ exports.loginService = ({ phone, password }) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await findOneUser(phone);
-      if (response.isAcctive === 1) {
-        return ReF(res, 200, config.message.LOCK_LOGIN);
-      }
+
       const isCorrect =
         response && bcrypt.compareSync(password, response.password);
       const token =
@@ -168,9 +166,6 @@ exports.loginServiceStaff = ({ phone, password }) =>
   new Promise(async (resolve, reject) => {
     try {
       const response = await findOneStaff(phone);
-      if (response.isAcctive === 1) {
-        return ReF(res, 200, config.message.LOCK_LOGIN);
-      }
       const isCorrect =
         response && bcrypt.compareSync(password, response.password);
       const token =

@@ -76,7 +76,6 @@ exports.loginStaff = async (req, res) => {
 
     const response = await authController.loginServiceStaff(req.body);
     const token = response.token;
-    const mgs = response.msg;
     if (response.success === true) {
       return res.status(200).json({
         message: config.message.LOGIN_SUCCESS,
