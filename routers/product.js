@@ -8,7 +8,7 @@ const {
 const router = require("express").Router();
 
 router.get("/all", getAllProduct);
-router.get("/getPriceRecipe", PriceRecipe);
+router.post("/getPriceRecipe", PriceRecipe);
 router.get("/recipre/:product_id", getRecipreById);
 router.put("/recipre-update/:product_id", updateRecipe);
 
