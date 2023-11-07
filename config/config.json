@@ -1,9 +1,10 @@
 {
   "development": {
-    "username": "ulf38vnxctb3ihfx",
-    "password": "SewWeTVqz9aqOx4XV6uD",
-    "database": "bk0ovpshqljsticlvhj7",
-    "host": "bk0ovpshqljsticlvhj7-mysql.services.clever-cloud.com",
-    "dialect": "mysql"
+    "username": "4VxzZhurnXSLgxd.root",
+    "password": "4IHT6hr0xRXSSmW2",
+    "database": "trasua",
+    "host": "gateway01.ap-southeast-1.prod.aws.tidbcloud.com",
+    "dialect": "mysql",
+    "port": 4000
   }
 }

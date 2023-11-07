@@ -9,18 +9,37 @@ const env = "development";
 const config = require(__dirname + "/../config/config.json")[env];
 const db = {};
 
-let sequelize;
+// let sequelize;
 // if (config.use_env_variable) {
 //   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 // } else {
-sequelize = new Sequelize(
+// sequelize = new Sequelize(
+//   config.database,
+//   "4VxzZhurnXSLgxd.root",
+//   config.password,
+//   config.port,
+//   config
+// );
+// // }
+const sequelize = new Sequelize(
   config.database,
   config.username,
   config.password,
-  config
+  {
+    host: config.host,
+    dialect: config.dialect,
+    port: config.port,
+    operatorsAliases: false,
+    dialectOptions: {
+      dateStrings: true,
+      typeCast: true,
+      timezone: "+07:00",
+      ssl: { minVersion: "TLSv1.2", aaf: "as" },
+    },
+    timezone: "+07:00",
+    logging: false,
+  }
 );
-// }
-
 fs.readdirSync(__dirname)
   .filter((file) => {
     return (
