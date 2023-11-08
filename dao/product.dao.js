@@ -66,16 +66,20 @@ async function getProductdao(id) {
 
 async function createProductdao(name, price, image, descript, recipre) {
   try {
-    const data = await cloudinary.v2.uploader.upload(
-      image,
-      {
-        folder: "product",
-        width: 320,
-        height: 320,
-        crop: "scale",
-      },
-      function (error, result) {}
-    );
+    let data;
+    if (image) {
+      data = await cloudinary.v2.uploader.upload(
+        image,
+        {
+          folder: "product",
+          width: 320,
+          height: 320,
+          crop: "scale",
+        },
+        function (error, result) {}
+      );
+    }
+
     // xu ly nhap gia trung binh cho san pham khi tao moi
     let sum = 0;
     for (let j of recipre) {
@@ -85,12 +89,12 @@ async function createProductdao(name, price, image, descript, recipre) {
       });
       sum = sum + j.quantity * data1.capital_price;
     }
-
+    console.log(sum, "''''''''========================");
     // tao san pham
     const product = await db.Product.create({
       name,
-      image: data.url,
-      price: sum + sum * 0.3,
+      image: data?.url,
+      price: price,
       descript,
       capital_price: sum,
     });
@@ -120,7 +124,8 @@ async function getPriceRecipe(recipre) {
       });
     };
     recipre.forEach((element) => {
-      countPrice += price(element.id)[0].capital_price * element.count;
+      countPrice +=
+        price(element.ingredient_id)[0].capital_price * element.quantity;
     });
 
     return countPrice;
