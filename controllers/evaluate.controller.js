@@ -7,6 +7,8 @@ const config = require("../config/config");
 const {
   createEvaluateNoImgDao,
   updateEvaluateNoImgDao,
+
+  updateEvaluateDao,
   createEvaluateDao,
 } = require("../dao/evaluate.dao");
 exports.DanhGiaSanPham = async (req, res) => {
