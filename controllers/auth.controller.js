@@ -301,7 +301,7 @@ exports.sendEmailOTP = async (req, res) => {
         );
       }
     } else {
-      return ReF(res, 200, SEND_MAIL_OTP);
+      return ReF(res, 200, config.message.SEND_MAIL_OTP);
     }
   } catch (err) {
     return res.status(500).json({
