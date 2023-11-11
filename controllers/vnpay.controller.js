@@ -33,7 +33,8 @@ exports.vnpay = async (req, res) => {
   vnp_Params["vnp_OrderType"] = 110000;
   vnp_Params["vnp_Amount"] = amount * 100;
   // vnp_Params['vnp_ReturnUrl'] = `${req.protocol}://${req.hostname}/api/bill/vnpay_ipn`;
-  vnp_Params["vnp_ReturnUrl"] = "http://localhost:3000/api/v1/customer/return";
+  vnp_Params["vnp_ReturnUrl"] =
+    "https://betrasua.onrender.com/api/v1/customer/return";
   vnp_Params["vnp_IpAddr"] = ipAddr;
   vnp_Params["vnp_CreateDate"] = createDate;
 
@@ -101,9 +102,11 @@ exports.vnpay_return = async (req, res) => {
       var rspCode = vnp_Params["vnp_ResponseCode"];
       if (rspCode === "00") {
         await orderDao.createOrderDao(dataOrder.data, dataOrder.address);
-        res.status(301).redirect(`http://localhost:3001/ThanhCong/${rspCode}`);
+        res
+          .status(301)
+          .redirect(`https://trasua.vercel.app/ThanhCong/${rspCode}`);
       } else {
-        res.status(301).redirect(`http://localhost:3001/Cart`);
+        res.status(301).redirect(`https://trasua.vercel.app/Cart`);
       }
     } else {
       res.status(200).json({ RspCode: "97", Message: "Fail checksum" });
