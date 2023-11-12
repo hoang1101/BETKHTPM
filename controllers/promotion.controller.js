@@ -115,18 +115,7 @@ exports.deletePromotion = async (req, res) => {
   try {
     const { id } = req.params;
     const kt = await getOnePromotionByIdDao(id);
-    if (
-      kt.start_day >
-      new Date(
-        moment(
-          new Date(
-            new Date().getFullYear(),
-            new Date().getMonth(),
-            new Date().getDate()
-          )
-        ).format("YYYY-MM-DD")
-      )
-    ) {
+    if (new Date(kt.start_day) > new Date()) {
       const data = await deletePromotionDao(id);
       if (data) {
         return ReS(res, 200, config.message.UPDATE_SUCCESS);
