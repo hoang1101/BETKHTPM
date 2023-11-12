@@ -142,9 +142,6 @@ exports.statisticalRevenueProductDateVer2 = async (req, res) => {
           sl = sl + j.quantity;
           dg = dg + (j.price * j.quantity - j.capital_price * j.quantity);
           // console.log(sl, dg);
-        } else {
-          sl = 0;
-          dg = 0;
         }
       }
       if (sl > 0) {
@@ -155,7 +152,7 @@ exports.statisticalRevenueProductDateVer2 = async (req, res) => {
         });
         tong = tong + dg;
       }
-      (sl = 0), (dg = 0);
+      // (sl = 0), (dg = 0);
     }
 
     return res.status(200).json({
