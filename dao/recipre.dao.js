@@ -44,7 +44,6 @@ async function UpdateRecipeDao(product_id, recipe) {
     }
     let product = await db.Product.update(
       {
-        price: sum + sum * 0.3,
         capital_price: sum,
       },
       {
