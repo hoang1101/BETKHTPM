@@ -147,7 +147,7 @@ exports.statisticalRevenueProductDateVer2 = async (req, res) => {
           dg = 0;
         }
       }
-      if (sl >= 0) {
+      if (sl > 0) {
         datatk.push({
           ...i,
           sl: sl,
