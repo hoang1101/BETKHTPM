@@ -33,6 +33,10 @@ exports.loginCustomer = async (req, res) => {
 
     const customer = await findOneUser(phone);
 
+    if (customer.isAcctive === 1) {
+      return ReF(res, 200, config.message.LOCK_LOGIN);
+    }
+
     const response = await authController.loginService(req.body);
     const token = response.token;
     const mgs = response.msg;
