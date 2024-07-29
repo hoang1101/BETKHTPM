@@ -25,6 +25,8 @@
     "request": "^2.88.2",
     "sequelize": "^6.32.0",
     "speakeasy": "^2.0.0",
+    "swagger-ui-express": "^5.0.1",
+    "uuid": "^10.0.0",
     "validator": "^13.9.0"
   },
   "devDependencies": {

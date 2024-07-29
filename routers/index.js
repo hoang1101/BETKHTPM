@@ -7,6 +7,7 @@ const customerRouter = require("./customer");
 const untilRoter = require("./until");
 const productRouter = require("./product");
 const staffRouter = require("./staff");
+const userRouter = require("./user");
 // const userRouter = require('./user');
 
 const initRouter = (app) => {
@@ -21,6 +22,7 @@ const initRouter = (app) => {
   app.use("/api/v1/staff", staffRouter);
   app.use("/api/v1/until", untilRoter);
   app.use("/api/v1/customer", customerRouter);
+  app.use("/api/v1/user", userRouter);
 };
 
 module.exports = initRouter;

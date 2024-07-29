@@ -4,11 +4,12 @@ const db = require("./models");
 const PORT = process.env.PORT || 3000;
 const cors = require("cors");
 const cloudinary = require("cloudinary").v2;
-
+const swaggerUi = require("swagger-ui-express");
+const swaggerDocument = require("./swagger.json");
 app.use(express.json({ limit: "50mb" }));
 app.use(express.urlencoded({ limit: "50mb" }));
 app.use(cors());
-
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 // Thiết lập các thông tin cấu hình của Cloudinary
 cloudinary.config({
   cloud_name: "dvys3iezz",
