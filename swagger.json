@@ -172,6 +172,23 @@
         },
         "responses": {}
       }
+    },
+    "/user/social": {
+      "get": {
+        "summary": "Get social by address",
+        "parameters": [
+          {
+            "name": "address",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            },
+            "description": "The address of the user to filter by"
+          }
+        ],
+        "responses": {}
+      }
     }
   }
 }

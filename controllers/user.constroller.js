@@ -131,7 +131,10 @@ const verifySocial = async (req, res) => {
             );
             return ReS(res, 200, action);
           } else {
-            action = await db.Social.create({ joinTwitter: true });
+            action = await db.Social.create({
+              user_id: user.id,
+              joinTwitter: true,
+            });
             return ReS(res, 200, action);
           }
         } else {
@@ -148,7 +151,10 @@ const verifySocial = async (req, res) => {
             );
             return ReS(res, 200, action);
           } else {
-            action = await db.Social.create({ joinVibxDiscord: true });
+            action = await db.Social.create({
+              user_id: user.id,
+              joinVibxDiscord: true,
+            });
             return ReS(res, 200, action);
           }
         } else {
@@ -165,7 +171,10 @@ const verifySocial = async (req, res) => {
             );
             return ReS(res, 200, action);
           } else {
-            action = await db.Social.create({ joinChannelTelegram: true });
+            action = await db.Social.create({
+              user_id: user.id,
+              joinChannelTelegram: true,
+            });
             return ReS(res, 200, action);
           }
         } else {
@@ -182,4 +191,39 @@ const verifySocial = async (req, res) => {
     });
   }
 };
-module.exports = { createUser, getUserByAddress, loginSocial, verifySocial };
+
+const getSocialByAddress = async (req, res) => {
+  try {
+    address = req.query.address;
+    if (!address) {
+      return ReF(res, 200, "Missing address");
+    }
+    user = await db.User.findOne({
+      where: { address: address },
+    });
+    if (!user) {
+      return ReF(res, 200, "Can not user");
+    }
+    action = await db.Social.findOne({
+      where: { user_id: user.id },
+    });
+
+    if (action) {
+      return ReS(res, 200, action);
+    }
+    return ReF(res, 200, "Can not Social");
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: -1,
+      msg: "Fail at auth controller: " + error,
+    });
+  }
+};
+module.exports = {
+  createUser,
+  getUserByAddress,
+  loginSocial,
+  verifySocial,
+  getSocialByAddress,
+};
