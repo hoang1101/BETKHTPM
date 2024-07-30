@@ -18,7 +18,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       password: {
         type: DataTypes.STRING,
-        unique: true,
       },
       twitterUsername: {
         type: DataTypes.STRING,

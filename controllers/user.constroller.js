@@ -10,7 +10,6 @@ const createUser = async (req, res) => {
     }
     action = await db.User.create({
       address: address,
-      token: uuidv4(),
       password: password,
     });
 
